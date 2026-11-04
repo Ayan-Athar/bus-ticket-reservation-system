@@ -1,0 +1,42 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<math.h>
+#define MAX_TICKETS 100
+typedef struct{
+    int ticket_id;
+    char name[50];
+    char contact[15];
+    int age;
+    char gender[10];
+    char date[20];
+    int seatNumber;
+    char source[50];
+    char destination[50];
+    int duration;
+    float price;
+    int bookingStatus;
+    int discount;
+    float total_price;
+    char routeDisplay[100];
+    int routeDistance;
+
+} BusTicket;
+BusTicket tickets[MAX_TICKETS];
+int count = 0;
+void inputTicket(BusTicket tickets[], int index);
+void displayTicket(BusTicket tickets[], int index);
+void displayAllTickets(void);
+void bookTicket(void);
+void cancelTicket(void);
+int findTicketByID(int ticket_id);
+void searchTicket(void);
+int calculateDiscount(int age);
+float calculateTotalPrice(float price, int discount);
+void setRouteDetails(BusTicket tickets[], int index);
+int generateTicketID(void);
+void menu(void);
+
+int main(){
+
+}
