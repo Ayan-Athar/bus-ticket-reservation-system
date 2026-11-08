@@ -135,8 +135,3 @@ void setRouteDetails(BusTicket tickets[], int index) {
     printf("Total Distance: %d km\n", tickets[index].routeDistance);
     printf("Total Duration: %d hours\n", tickets[index].duration);
 }
-
-// Empty main function for team integration
-int main() {
-    return 0;
-}
