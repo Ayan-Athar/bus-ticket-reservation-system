@@ -1,0 +1,360 @@
+#include<stdio.h>
+#include<string.h>
+#include<ctype.h>
+#define MAX_TICKETS 100
+#define MAX_SEATS 40
+#define BOOKED 1
+#define CANCELLED 0
+ 
+typedef struct{
+    int ticket_id;
+    char name[50];
+    char contact[15];
+    int age;
+    char gender[10];
+    char date[20];
+    int seatNumber;
+    char source[50];
+    char destination[50];
+    int duration;
+    float price;
+    int bookingStatus;
+    int discount;
+    float total_price;
+    char routeDisplay[100];
+    int routeDistance;
+ 
+} BusTicket;
+BusTicket tickets[MAX_TICKETS];
+int count = 0;
+void inputTicket(BusTicket tickets[], int index);
+void displayTicket(BusTicket tickets[], int index);
+void displayAllTickets(void);
+void bookTicket(void);
+void cancelTicket(void);
+int findTicketByID(int ticket_id);
+void searchTicket(void);
+int calculateDiscount(int age);
+float calculateTotalPrice(float price, int discount);
+void setRouteDetails(BusTicket tickets[], int index);
+int generateTicketID(void);
+void menu(void);
+ 
+/* ---------- helpers ---------- */
+ 
+static int strcasecmp_custom(const char *s1, const char *s2) {
+    while (*s1 && *s2) {
+        if (tolower((unsigned char)*s1) != tolower((unsigned char)*s2))
+            return 1;
+        s1++;
+        s2++;
+    }
+    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
+}
+ 
+static void clearInput(void){
+    int c;
+    while((c = getchar()) != '\n' && c != EOF);
+}
+ 
+/* Returns 1 if the seat is already booked on the same date and route */
+static int isSeatTaken(int seat, const char *date, const char *src, const char *dst){
+    for(int i = 0; i < count; i++){
+        if(tickets[i].bookingStatus == BOOKED && tickets[i].seatNumber == seat && strcmp(tickets[i].date, date) == 0 && strcasecmp_custom(tickets[i].source, src) == 0 && strcasecmp_custom(tickets[i].destination, dst) == 0)
+            return 1;
+    }
+    return 0;
+}
+ 
+int main(){
+ 
+    int opt;
+    do{
+        menu();
+        if(scanf("%d", &opt) != 1){
+            clearInput();
+            opt = 0;
+        }
+        switch(opt){
+            case 1:
+                bookTicket();
+                break;
+            case 2:
+                cancelTicket();
+                break;
+            case 3:
+                searchTicket();
+                break;
+            case 4:
+                displayAllTickets();
+                break;
+            case 5:
+                printf("Thank you!\n");
+                break;
+            default:
+                printf("Invalid option. Please try again.\n");
+        }
+    }while(opt != 5);
+ 
+    return 0;
+}
+void menu(void){
+        printf("\n\nBus Ticket Reservation System\n");
+        printf("1. Book Ticket\n");
+        printf("2. Cancel Ticket\n");
+        printf("3. Search Ticket\n");
+        printf("4. Display All Tickets\n");
+        printf("5. Exit\n");
+        printf("Enter your choice(1-5): ");
+}
+void inputTicket(BusTicket tickets[], int index){
+    printf("Enter passenger name: ");
+    scanf(" %49[^\n]", tickets[index].name);
+    printf("Enter contact number: ");
+    scanf(" %14[^\n]", tickets[index].contact);
+ 
+    do{
+        printf("Enter age: ");
+        if(scanf("%d", &tickets[index].age) != 1){
+            clearInput();
+            tickets[index].age = -1;
+        }
+        if(tickets[index].age <= 0 || tickets[index].age > 120)
+            printf("Invalid age. Try again.\n");
+    } while(tickets[index].age <= 0 || tickets[index].age > 120);
+ 
+    printf("Enter gender: ");
+    scanf(" %9[^\n]", tickets[index].gender);
+    printf("Enter travel date (dd/mm/yyyy): ");
+    scanf(" %19[^\n]", tickets[index].date);
+    printf("Available cities: Karachi, Lahore, Islamabad, Peshawar\n");
+    printf("Enter source: ");
+    scanf(" %49[^\n]", tickets[index].source);
+    printf("Enter destination: ");
+    scanf(" %49[^\n]", tickets[index].destination);
+ 
+    /* Work out the route first so we can reject invalid routes early */
+    setRouteDetails(tickets, index);
+    if(tickets[index].routeDistance == 0)
+        return;
+ 
+    int seat;
+    do{
+        printf("Enter seat number (1-%d): ", MAX_SEATS);
+        if(scanf("%d", &seat) != 1){ clearInput(); seat = 0; }
+        if(seat < 1 || seat > MAX_SEATS)
+            printf("Invalid seat number.\n");
+        else if(isSeatTaken(seat, tickets[index].date,
+                            tickets[index].source, tickets[index].destination)){
+            printf("Seat %d is already booked for this trip.\n", seat);
+            seat = 0;
+        }
+    } while(seat < 1 || seat > MAX_SEATS);
+    tickets[index].seatNumber = seat;
+    tickets[index].discount = calculateDiscount(tickets[index].age);
+    tickets[index].total_price = calculateTotalPrice(tickets[index].price,tickets[index].discount);
+    tickets[index].ticket_id = generateTicketID();
+    tickets[index].bookingStatus = BOOKED;
+}
+void displayTicket(BusTicket tickets[], int index){
+    printf("\n-------------------------------------\n");
+    printf("Ticket ID: %d\n", tickets[index].ticket_id);
+    printf("Passenger Name: %s\n", tickets[index].name);
+    printf("Contact Number: %s\n", tickets[index].contact);
+    printf("Age: %d\n", tickets[index].age);
+    printf("Gender: %s\n", tickets[index].gender);
+    printf("Travel Date: %s\n", tickets[index].date);
+    printf("Seat Number: %d\n", tickets[index].seatNumber);
+    printf("Source: %s\n", tickets[index].source);
+    printf("Destination: %s\n", tickets[index].destination);
+    printf("Duration: %d hours\n", tickets[index].duration);
+    printf("Price: %.2f\n", tickets[index].price);
+    printf("Discount: %d%%\n", tickets[index].discount);
+    printf("Total Price: %.2f\n", tickets[index].total_price);
+    printf("Route Display: %s\n", tickets[index].routeDisplay);
+    printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
+    printf("-------------------------------------\n");
+}
+int calculateDiscount(int age){
+    if(age<=12)
+        return 50;
+    else if(age>=60)
+        return 30;
+    else
+        return 0;
+}
+float calculateTotalPrice(float price, int discount){
+    return price - (price * discount / 100.0f);
+}
+ 
+static int isRoute(const char *srcInput, const char *destInput, const char *cityA, const char *cityB) {
+    return (strcasecmp_custom(srcInput, cityA) == 0 && strcasecmp_custom(destInput, cityB) == 0) ||
+           (strcasecmp_custom(srcInput, cityB) == 0 && strcasecmp_custom(destInput, cityA) == 0);
+}
+ 
+// 1. Generate Unique Ticket ID
+int generateTicketID(void) {
+    static int id = 1000;
+    return ++id;
+}
+ 
+// 2. Find Ticket Index By ID
+int findTicketByID(int ticket_id) {
+    for (int i = 0; i < count; i++) {
+        if (tickets[i].ticket_id == ticket_id) {
+            return i;
+        }
+    }
+    return -1;
+}
+ 
+// 3. Set Route Details and Calculate Distance/Time
+void setRouteDetails(BusTicket tickets[], int index) {
+    char *src = tickets[index].source;
+    char *dest = tickets[index].destination;
+ 
+    // 1. Karachi <-> Lahore
+    if (isRoute(src, dest, "Karachi", "Lahore")) {
+        if (strcasecmp_custom(src, "Karachi") == 0)
+            strcpy(tickets[index].routeDisplay, "Karachi -> Hyd -> Sukkur -> Multan -> Lahore");
+        else
+            strcpy(tickets[index].routeDisplay, "Lahore -> Multan -> Sukkur -> Hyd -> Karachi");
+ 
+        tickets[index].routeDistance = 1218;
+        tickets[index].duration = 16;
+        tickets[index].price = 4500.0f;
+    }
+    // 2. Karachi <-> Islamabad
+    else if (isRoute(src, dest, "Karachi", "Islamabad")) {
+        if (strcasecmp_custom(src, "Karachi") == 0)
+            strcpy(tickets[index].routeDisplay, "Karachi -> Hyd -> Sukkur -> Multan -> Lhr -> Isb");
+        else
+            strcpy(tickets[index].routeDisplay, "Islamabad -> Lhr -> Multan -> Sukkur -> Hyd -> Karachi");
+ 
+        tickets[index].routeDistance = 1593;
+        tickets[index].duration = 20;
+        tickets[index].price = 5500.0f;
+    }
+    // 3. Lahore <-> Islamabad
+    else if (isRoute(src, dest, "Lahore", "Islamabad")) {
+        if (strcasecmp_custom(src, "Lahore") == 0)
+            strcpy(tickets[index].routeDisplay, "Lahore -> Islamabad");
+        else
+            strcpy(tickets[index].routeDisplay, "Islamabad -> Lahore");
+ 
+        tickets[index].routeDistance = 375;
+        tickets[index].duration = 4;
+        tickets[index].price = 1800.0f;
+    }
+    // 4. Islamabad <-> Peshawar
+    else if (isRoute(src, dest, "Islamabad", "Peshawar")) {
+        if (strcasecmp_custom(src, "Islamabad") == 0)
+            strcpy(tickets[index].routeDisplay, "Islamabad -> Peshawar");
+        else
+            strcpy(tickets[index].routeDisplay, "Peshawar -> Islamabad");
+ 
+        tickets[index].routeDistance = 155;
+        tickets[index].duration = 2;
+        tickets[index].price = 1000.0f;
+    }
+    else {
+        tickets[index].routeDistance = 0;
+        tickets[index].duration = 0;
+        tickets[index].price = 0.0f;
+        strcpy(tickets[index].routeDisplay, "Not Available");
+        printf("Route not available!\n");
+        return;
+    }
+ 
+    printf("\n--- ROUTE DETAILS ---\n");
+    printf("Route: %s\n", tickets[index].routeDisplay);
+    printf("Total Distance: %d km\n", tickets[index].routeDistance);
+    printf("Total Duration: %d hours\n", tickets[index].duration);
+}
+ 
+/* ---------- the missing functions ---------- */
+ 
+void bookTicket(void){
+    if(count >= MAX_TICKETS){
+        printf("\nNo more tickets can be booked.\n");
+        return;
+    }
+    inputTicket(tickets, count);
+ 
+    /* inputTicket returns early if the route is invalid */
+    if(tickets[count].routeDistance == 0){
+        printf("Booking failed. Please try again with a valid route.\n");
+        return;
+    }
+ 
+    printf("\nTicket booked successfully!");
+    displayTicket(tickets, count);
+    count++;
+}
+ 
+void cancelTicket(void){
+    int id;
+    printf("Enter ticket ID to cancel: ");
+    if(scanf("%d", &id) != 1){
+        clearInput();
+        printf("Invalid input.\n");
+        return;
+    }
+ 
+    int idx = findTicketByID(id);
+    if(idx == -1){
+        printf("Ticket not found.\n");
+    } else if(tickets[idx].bookingStatus == CANCELLED){
+        printf("This ticket is already cancelled.\n");
+    } else {
+        tickets[idx].bookingStatus = CANCELLED;
+        printf("Ticket %d cancelled.\nSeat %d is now free.\n", id, tickets[idx].seatNumber);
+    }
+}
+ 
+void searchTicket(void){
+    int choice;
+    printf("\nSearch by:\n1. Ticket ID\n2. Passenger Name\nChoice: ");
+    if(scanf("%d", &choice) != 1){
+        clearInput();
+        printf("Invalid input.\n");
+        return;
+    }
+ 
+    if(choice == 1){
+        int id;
+        printf("Enter ticket ID: ");
+        if(scanf("%d", &id) != 1){
+            clearInput();
+            printf("Invalid input.\n");
+            return;
+        }
+        int idx = findTicketByID(id);
+        if(idx == -1) printf("Ticket not found.\n");
+        else displayTicket(tickets, idx);
+    } else if(choice == 2){
+        char name[50];
+        int found = 0;
+        printf("Enter passenger name: ");
+        scanf(" %49[^\n]", name);
+        for(int i = 0; i < count; i++){
+            if(strcasecmp_custom(tickets[i].name, name) == 0){
+                displayTicket(tickets, i);
+                found = 1;
+            }
+        }
+        if(!found) printf("No ticket found for \"%s\".\n", name);
+    } else {
+        printf("Invalid choice.\n");
+    }
+}
+ 
+void displayAllTickets(void){
+    if(count == 0){
+        printf("\nNo tickets booked yet.\n");
+        return;
+    }
+    printf("\n===== ALL TICKETS (%d) =====", count);
+    for(int i = 0; i < count; i++)
+        displayTicket(tickets, i);
+}
