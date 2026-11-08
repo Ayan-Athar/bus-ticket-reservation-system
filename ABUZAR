@@ -6,7 +6,6 @@
 
 #define MAX_TICKETS 100
 
-// Struct Definition (Exactly as per Image 1)
 typedef struct {
     int ticket_id;
     char name[50];
@@ -26,11 +25,9 @@ typedef struct {
     int routeDistance;
 } BusTicket;
 
-// Global Variables
 BusTicket tickets[MAX_TICKETS];
 int count = 0;
 
-// ALL FUNCTION PROTOTYPES (Preserved from Images 1 & 2 for GitHub push)
 void inputTicket(BusTicket tickets[], int index);
 void displayTicket(BusTicket tickets[], int index);
 void displayAllTickets(void);
@@ -44,7 +41,6 @@ void setRouteDetails(BusTicket tickets[], int index);
 int generateTicketID(void);
 void menu(void);
 
-// Helper Functions for your route module
 static int strcasecmp_custom(const char *s1, const char *s2) {
     while (*s1 && *s2) {
         if (tolower((unsigned char)*s1) != tolower((unsigned char)*s2))
@@ -59,10 +55,6 @@ static int isRoute(const char *srcInput, const char *destInput, const char *city
     return (strcasecmp_custom(srcInput, cityA) == 0 && strcasecmp_custom(destInput, cityB) == 0) ||
            (strcasecmp_custom(srcInput, cityB) == 0 && strcasecmp_custom(destInput, cityA) == 0);
 }
-
-// ============================================================================
-// YOUR ASSIGNED FUNCTIONS DEFINITION
-// ============================================================================
 
 // 1. Generate Unique Ticket ID
 int generateTicketID(void) {
