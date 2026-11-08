@@ -1,0 +1,150 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <ctype.h>
+
+#define MAX_TICKETS 100
+
+// Struct Definition (Exactly as per Image 1)
+typedef struct {
+    int ticket_id;
+    char name[50];
+    char contact[15];
+    int age;
+    char gender[10];
+    char date[20];
+    int seatNumber;
+    char source[50];
+    char destination[50];
+    int duration;
+    float price;
+    int bookingStatus;
+    int discount;
+    float total_price;
+    char routeDisplay[100];
+    int routeDistance;
+} BusTicket;
+
+// Global Variables
+BusTicket tickets[MAX_TICKETS];
+int count = 0;
+
+// ALL FUNCTION PROTOTYPES (Preserved from Images 1 & 2 for GitHub push)
+void inputTicket(BusTicket tickets[], int index);
+void displayTicket(BusTicket tickets[], int index);
+void displayAllTickets(void);
+void bookTicket(void);
+void cancelTicket(void);
+int findTicketByID(int ticket_id);
+void searchTicket(void);
+int calculateDiscount(int age);
+float calculateTotalPrice(float price, int discount);
+void setRouteDetails(BusTicket tickets[], int index);
+int generateTicketID(void);
+void menu(void);
+
+// Helper Functions for your route module
+static int strcasecmp_custom(const char *s1, const char *s2) {
+    while (*s1 && *s2) {
+        if (tolower((unsigned char)*s1) != tolower((unsigned char)*s2))
+            return 1;
+        s1++;
+        s2++;
+    }
+    return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
+}
+
+static int isRoute(const char *srcInput, const char *destInput, const char *cityA, const char *cityB) {
+    return (strcasecmp_custom(srcInput, cityA) == 0 && strcasecmp_custom(destInput, cityB) == 0) ||
+           (strcasecmp_custom(srcInput, cityB) == 0 && strcasecmp_custom(destInput, cityA) == 0);
+}
+
+// ============================================================================
+// YOUR ASSIGNED FUNCTIONS DEFINITION
+// ============================================================================
+
+// 1. Generate Unique Ticket ID
+int generateTicketID(void) {
+    static int id = 1000;
+    return ++id;
+}
+
+// 2. Find Ticket Index By ID
+int findTicketByID(int ticket_id) {
+    for (int i = 0; i < count; i++) {
+        if (tickets[i].ticket_id == ticket_id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// 3. Set Route Details and Calculate Distance/Time
+void setRouteDetails(BusTicket tickets[], int index) {
+    char *src = tickets[index].source;
+    char *dest = tickets[index].destination;
+
+    // 1. Karachi <-> Lahore
+    if (isRoute(src, dest, "Karachi", "Lahore")) {
+        if (strcasecmp_custom(src, "Karachi") == 0)
+            strcpy(tickets[index].routeDisplay, "Karachi -> Hyd -> Sukkur -> Multan -> Lahore");
+        else
+            strcpy(tickets[index].routeDisplay, "Lahore -> Multan -> Sukkur -> Hyd -> Karachi");
+
+        tickets[index].routeDistance = 1218;
+        tickets[index].duration = 16;
+        tickets[index].price = 4500.0f;
+    }
+    // 2. Karachi <-> Islamabad
+    else if (isRoute(src, dest, "Karachi", "Islamabad")) {
+        if (strcasecmp_custom(src, "Karachi") == 0)
+            strcpy(tickets[index].routeDisplay, "Karachi -> Hyd -> Sukkur -> Multan -> Lhr -> Isb");
+        else
+            strcpy(tickets[index].routeDisplay, "Islamabad -> Lhr -> Multan -> Sukkur -> Hyd -> Karachi");
+
+        tickets[index].routeDistance = 1593;
+        tickets[index].duration = 20;
+        tickets[index].price = 5500.0f;
+    }
+    // 3. Lahore <-> Islamabad
+    else if (isRoute(src, dest, "Lahore", "Islamabad")) {
+        if (strcasecmp_custom(src, "Lahore") == 0)
+            strcpy(tickets[index].routeDisplay, "Lahore -> Islamabad");
+        else
+            strcpy(tickets[index].routeDisplay, "Islamabad -> Lahore");
+
+        tickets[index].routeDistance = 375;
+        tickets[index].duration = 4;
+        tickets[index].price = 1800.0f;
+    }
+    // 4. Islamabad <-> Peshawar
+    else if (isRoute(src, dest, "Islamabad", "Peshawar")) {
+        if (strcasecmp_custom(src, "Islamabad") == 0)
+            strcpy(tickets[index].routeDisplay, "Islamabad -> Peshawar");
+        else
+            strcpy(tickets[index].routeDisplay, "Peshawar -> Islamabad");
+
+        tickets[index].routeDistance = 155;
+        tickets[index].duration = 2;
+        tickets[index].price = 1000.0f;
+    }
+    else {
+        tickets[index].routeDistance = 0;
+        tickets[index].duration = 0;
+        tickets[index].price = 0.0f;
+        strcpy(tickets[index].routeDisplay, "Not Available");
+        printf("Route not available!\n");
+        return;
+    }
+
+    printf("\n--- ROUTE DETAILS ---\n");
+    printf("Route: %s\n", tickets[index].routeDisplay);
+    printf("Total Distance: %d km\n", tickets[index].routeDistance);
+    printf("Total Duration: %d hours\n", tickets[index].duration);
+}
+
+// Empty main function for team integration
+int main() {
+    return 0;
+}
