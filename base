@@ -50,6 +50,7 @@ float calculateTotalPrice(float price, int discount);
 void setRouteDetails(BusTicket tickets[], int index);
 int generateTicketID(void);
 void menu(void);
+static int isValidName(const char *s);
 static int isValidContact(const char *s);
 static int isValidAge(int age);
 static int isValidGender(const char *s);
@@ -62,7 +63,19 @@ static void clearInput(void);
                                       CONDITION CHECK FUNCTIONS
 
 ================================================================================================================*/
- 
+
+static int isValidName(const char *s){
+    int letters = 0;
+    for(int i = 0; s[i]; i++){
+        unsigned char c = (unsigned char)s[i];
+        if(isalpha(c))
+            letters++;
+        else if(c != ' ' && c != '.' && c != '-' && c != '\'')
+            return 0;              // digits, commas and other symbols
+    }
+    return letters > 2;
+}
+
 static int isValidContact(const char *s){
     if(strlen(s)!=11)
     return 0;
@@ -201,8 +214,14 @@ int main(){
 
 void inputTicket(BusTicket tickets[], int index){
 //Taking passenger name as input
+    do{
     printf("Enter passenger name: ");
-    scanf(" %49[^\n]", tickets[index].name);
+    if(scanf(" %49[^\n]", tickets[index].name) != 1)
+        tickets[index].name[0] = '\0';
+    clearInput();
+    if(!isValidName(tickets[index].name))
+        printf("Name must contain letters only (no numbers).\n");
+    } while(!isValidName(tickets[index].name));
 
 //Taking contact number as input and validating it to be in the format 03XXXXXXXXX
     do{
