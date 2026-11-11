@@ -3,6 +3,14 @@
 #include<string.h>
 #include<math.h>
 #define MAX_TICKETS 100
+#define MAX_SEATS 40
+#define BOOKED 1
+#define CANCELLED 0
+/*==============================================================================================================
+
+                                             STRUCTURE 
+
+================================================================================================================*/ 
 typedef struct{
     int ticket_id;
     char name[50];
@@ -20,10 +28,15 @@ typedef struct{
     float total_price;
     char routeDisplay[100];
     int routeDistance;
-
 } BusTicket;
 BusTicket tickets[MAX_TICKETS];
 int count = 0;
+/*==============================================================================================================
+
+                                        FUNCTIONS DECLARATION
+
+================================================================================================================*/
+
 void inputTicket(BusTicket tickets[], int index);
 void displayTicket(BusTicket tickets[], int index);
 void displayAllTickets(void);
@@ -36,10 +49,49 @@ float calculateTotalPrice(float price, int discount);
 void setRouteDetails(BusTicket tickets[], int index);
 int generateTicketID(void);
 void menu(void);
+/*==============================================================================================================
+
+                                            MAIN FUNCTION 
+
+================================================================================================================*/
 
 int main(){
-
+    loadTickets();
+    int opt;
+    do{
+        menu();
+        if(scanf("%d", &opt) != 1){
+            clearInput();
+            opt = 0;
+        }
+        switch(opt){
+            case 1:
+                bookTicket();
+                break;
+            case 2:
+                cancelTicket();
+                break;
+            case 3:
+                searchTicket();
+                break;
+            case 4:
+                displayAllTickets();
+                break;
+            case 5:
+                printf("Thank you!\n");
+                break;
+            default:
+                printf("Invalid option. Please try again.\n");
+        }
+    }while(opt != 5);
+    saveTickets();
+    return 0;
 }
+/*==============================================================================================================
+
+                                          INPUT FUNCTIONS
+
+================================================================================================================*/
 
 void inputTicket(BusTicket tickets[], int index){
     printf("Enter passenger name: ");
@@ -90,6 +142,12 @@ void inputTicket(BusTicket tickets[], int index){
     tickets[index].ticket_id = generateTicketID();
     tickets[index].bookingStatus = BOOKED;
 }
+/*==============================================================================================================
+
+                                          DISPLAY FUNCTIONS
+
+================================================================================================================*/
+
 void displayTicket(BusTicket tickets[], int index){
     printf("\n-------------------------------------\n");
     printf("Ticket ID: %d\n", tickets[index].ticket_id);
@@ -109,6 +167,11 @@ void displayTicket(BusTicket tickets[], int index){
     printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
     printf("-------------------------------------\n");
 }
+/*==============================================================================================================
+
+                                          DISCOUNT FUNCTIONS
+
+================================================================================================================*/
 
 int calculateDiscount(int age){
     if(age<=12)
@@ -117,3 +180,74 @@ int calculateDiscount(int age){
         return 30;
     else
         return 0;
+}
+/*==============================================================================================================
+
+                                          FILE FUNCTIONS
+
+================================================================================================================*/
+void saveTickets(void){
+    FILE *fp = fopen("tickets.csv", "w");
+    if(fp == NULL){
+        printf("Error opening file for writing.\n");
+        return;
+    }
+     fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Date, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount,Total Price, Booking Status\n");
+    for(int i = 0; i < count; i++){
+        fprintf(fp, "%d,%s,%s,%d,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%s\n", 
+                                                                    tickets[i].ticket_id, 
+                                                                    tickets[i].name,tickets[i].contact, 
+                                                                    tickets[i].age, tickets[i].gender, 
+                                                                    tickets[i].date,
+                                                                    tickets[i].seatNumber, 
+                                                                    tickets[i].source, 
+                                                                    tickets[i].destination, 
+                                                                    tickets[i].duration, 
+                                                                    tickets[i].routeDisplay, 
+                                                                    tickets[i].routeDistance, 
+                                                                    tickets[i].price, 
+                                                                    tickets[i].discount, 
+                                                                    tickets[i].total_price, 
+                                                                    tickets[i].bookingStatus==1?"Booked":"Cancelled");
+    }
+    fclose(fp);
+}
+
+
+
+
+void loadTickets(void){
+    FILE *fp = fopen("tickets.csv", "r");
+    if(fp == NULL){
+        printf("No previous ticket data found.\n");
+        return;
+    }
+    char line[512];
+    char status[20];
+    fgets(line, sizeof(line), fp); // Read header line
+    while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%19[^\r\n]",
+                                                                                          &tickets[count].ticket_id, 
+                                                                                          tickets[count].name, 
+                                                                                          tickets[count].contact, 
+                                                                                          &tickets[count].age,  
+                                                                                          tickets[count].gender, 
+                                                                                          tickets[count].date,
+                                                                                          &tickets[count].seatNumber, 
+                                                                                          tickets[count].source, 
+                                                                                          tickets[count].destination, 
+                                                                                          &tickets[count].duration, 
+                                                                                          tickets[count].routeDisplay, 
+                                                                                          &tickets[count].routeDistance, 
+                                                                                          &tickets[count].price, 
+                                                                                          &tickets[count].discount, 
+                                                                                          &tickets[count].total_price, 
+                                                                                          status) == 16){
+        tickets[count].bookingStatus= (strcmp(status, "Booked")== 0) ? BOOKED : CANCELLED;
+        count++;
+        if(tickets[count-1].ticket_id > lastTicketID)
+        lastTicketID = tickets[count-1].ticket_id; // Update lastTicketID to the last loaded ticket ID
+        if(count >= MAX_TICKETS) 
+        break;
+    }
+    fclose(fp);
+}
