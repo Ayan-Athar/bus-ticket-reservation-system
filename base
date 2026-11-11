@@ -219,8 +219,8 @@ void inputTicket(BusTicket tickets[], int index){
     do{
         printf("Enter age(1-120): ");
         if(scanf("%d", &tickets[index].age) != 1){
-            clearInput();
             tickets[index].age = -1;
+            clearInput();
         }
         if(!isValidAge(tickets[index].age))
             printf("Enter correct age.\n");
