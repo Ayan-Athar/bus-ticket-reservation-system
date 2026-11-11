@@ -109,3 +109,11 @@ void displayTicket(BusTicket tickets[], int index){
     printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
     printf("-------------------------------------\n");
 }
+
+int calculateDiscount(int age){
+    if(age<=12)
+        return 50;
+    else if(age>=60)
+        return 30;
+    else
+        return 0;
