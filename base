@@ -50,6 +50,7 @@ void setRouteDetails(BusTicket tickets[], int index);
 int generateTicketID(void);
 void menu(void);
 static int isValidContact(const char *s);
+static int isValidAge(int age);
 static int isSeatTaken(int seat, const char *date, const char *src, const char *dst);
 static int strcasecmp_custom(const char *s1, const char *s2);
 static void clearInput(void);
@@ -70,6 +71,11 @@ static int isValidContact(const char *s){
     }
     return 1;
 }
+
+static int isValidAge(int age){
+    return age>0 && age<=120;
+}
+
 static int strcasecmp_custom(const char *s1, const char *s2) {
     while (*s1 && *s2) {
         if (tolower((unsigned char)*s1) != tolower((unsigned char)*s2))
@@ -155,14 +161,14 @@ void inputTicket(BusTicket tickets[], int index){
 
 //Taking age as input and validating it to be between 1 and 120 
     do{
-        printf("Enter age: ");
+        printf("Enter age(1-120): ");
         if(scanf("%d", &tickets[index].age) != 1){
             clearInput();
             tickets[index].age = -1;
         }
-        if(tickets[index].age <= 0 || tickets[index].age > 120)
-            printf("Invalid age. Try again.\n");
-    } while(tickets[index].age <= 0 || tickets[index].age > 120);
+        if(!isValidAge(tickets[index].age))
+            printf("Enter correct age.\n");
+    } while(!isValidAge(tickets[index].age));
  
     printf("Enter gender: ");
     scanf(" %9[^\n]", tickets[index].gender);
