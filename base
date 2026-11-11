@@ -40,3 +40,72 @@ void menu(void);
 int main(){
 
 }
+
+void inputTicket(BusTicket tickets[], int index){
+    printf("Enter passenger name: ");
+    scanf(" %49[^\n]", tickets[index].name);
+    printf("Enter contact number: ");
+    scanf(" %14[^\n]", tickets[index].contact);
+ 
+    do{
+        printf("Enter age: ");
+        if(scanf("%d", &tickets[index].age) != 1){
+            clearInput();
+            tickets[index].age = -1;
+        }
+        if(tickets[index].age <= 0 || tickets[index].age > 120)
+            printf("Invalid age. Try again.\n");
+    } while(tickets[index].age <= 0 || tickets[index].age > 120);
+ 
+    printf("Enter gender: ");
+    scanf(" %9[^\n]", tickets[index].gender);
+    printf("Enter travel date (dd/mm/yyyy): ");
+    scanf(" %19[^\n]", tickets[index].date);
+    printf("Available cities: Karachi, Lahore, Islamabad, Peshawar\n");
+    printf("Enter source: ");
+    scanf(" %49[^\n]", tickets[index].source);
+    printf("Enter destination: ");
+    scanf(" %49[^\n]", tickets[index].destination);
+ 
+    /* Work out the route first so we can reject invalid routes early */
+    setRouteDetails(tickets, index);
+    if(tickets[index].routeDistance == 0)
+        return;
+ 
+    int seat;
+    do{
+        printf("Enter seat number (1-%d): ", MAX_SEATS);
+        if(scanf("%d", &seat) != 1){ clearInput(); seat = 0; }
+        if(seat < 1 || seat > MAX_SEATS)
+            printf("Invalid seat number.\n");
+        else if(isSeatTaken(seat, tickets[index].date,
+                            tickets[index].source, tickets[index].destination)){
+            printf("Seat %d is already booked for this trip.\n", seat);
+            seat = 0;
+        }
+    } while(seat < 1 || seat > MAX_SEATS);
+    tickets[index].seatNumber = seat;
+    tickets[index].discount = calculateDiscount(tickets[index].age);
+    tickets[index].total_price = calculateTotalPrice(tickets[index].price,tickets[index].discount);
+    tickets[index].ticket_id = generateTicketID();
+    tickets[index].bookingStatus = BOOKED;
+}
+void displayTicket(BusTicket tickets[], int index){
+    printf("\n-------------------------------------\n");
+    printf("Ticket ID: %d\n", tickets[index].ticket_id);
+    printf("Passenger Name: %s\n", tickets[index].name);
+    printf("Contact Number: %s\n", tickets[index].contact);
+    printf("Age: %d\n", tickets[index].age);
+    printf("Gender: %s\n", tickets[index].gender);
+    printf("Travel Date: %s\n", tickets[index].date);
+    printf("Seat Number: %d\n", tickets[index].seatNumber);
+    printf("Source: %s\n", tickets[index].source);
+    printf("Destination: %s\n", tickets[index].destination);
+    printf("Duration: %d hours\n", tickets[index].duration);
+    printf("Price: %.2f\n", tickets[index].price);
+    printf("Discount: %d%%\n", tickets[index].discount);
+    printf("Total Price: %.2f\n", tickets[index].total_price);
+    printf("Route Display: %s\n", tickets[index].routeDisplay);
+    printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
+    printf("-------------------------------------\n");
+}
