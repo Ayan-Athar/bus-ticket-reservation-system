@@ -410,6 +410,48 @@ void cancelTicket(void){
 }
 /*==============================================================================================================
 
+                                          SEARCH FUNCTIONS
+
+================================================================================================================*/
+ 
+void searchTicket(void){
+    int choice;
+    printf("\nSearch by:\n1. Ticket ID\n2. Passenger Name\nChoice: ");
+    if(scanf("%d", &choice) != 1){
+        clearInput();
+        printf("Invalid input.\n");
+        return;
+    }
+ 
+    if(choice == 1){
+        int id;
+        printf("Enter ticket ID: ");
+        if(scanf("%d", &id) != 1){
+            clearInput();
+            printf("Invalid input.\n");
+            return;
+        }
+        int idx = findTicketByID(id);
+        if(idx == -1) printf("Ticket not found.\n");
+        else displayTicket(tickets, idx);
+    } else if(choice == 2){
+        char name[50];
+        int found = 0;
+        printf("Enter passenger name: ");
+        scanf(" %49[^\n]", name);
+        for(int i = 0; i < count; i++){
+            if(strcasecmp_custom(tickets[i].name, name) == 0){
+                displayTicket(tickets, i);
+                found = 1;
+            }
+        }
+        if(!found) printf("No ticket found for \"%s\".\n", name);
+    } else {
+        printf("Invalid choice.\n");
+    }
+}
+/*==============================================================================================================
+
                                           FILE FUNCTIONS
 
 ================================================================================================================*/
