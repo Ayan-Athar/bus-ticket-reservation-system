@@ -385,6 +385,31 @@ void bookTicket(void){
 }
 /*==============================================================================================================
 
+                                          CANCEL FUNCTIONS
+
+================================================================================================================*/
+ 
+void cancelTicket(void){
+    int id;
+    printf("Enter ticket ID to cancel: ");
+    if(scanf("%d", &id) != 1){
+        clearInput();
+        printf("Invalid input.\n");
+        return;
+    }
+ 
+    int idx = findTicketByID(id);
+    if(idx == -1){
+        printf("Ticket not found.\n");
+    } else if(tickets[idx].bookingStatus == CANCELLED){
+        printf("This ticket is already cancelled.\n");
+    } else {
+        tickets[idx].bookingStatus = CANCELLED;
+        printf("Ticket %d cancelled.\nSeat %d is now free.\n", id, tickets[idx].seatNumber);
+    }
+}
+/*==============================================================================================================
+
                                           FILE FUNCTIONS
 
 ================================================================================================================*/
