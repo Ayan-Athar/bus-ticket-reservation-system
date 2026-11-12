@@ -362,6 +362,29 @@ static int isRoute(const char *srcInput, const char *destInput, const char *city
 }
 /*==============================================================================================================
 
+                                          BOOKING FUNCTIONS
+
+================================================================================================================*/
+ 
+void bookTicket(void){
+    if(count >= MAX_TICKETS){
+        printf("\nNo more tickets can be booked.\n");
+        return;
+    }
+    inputTicket(tickets, count);
+ 
+    /* inputTicket returns early if the route is invalid */
+    if(tickets[count].routeDistance == 0){
+        printf("Booking failed. Please try again with a valid route.\n");
+        return;
+    }
+ 
+    printf("\nTicket booked successfully!");
+    displayTicket(tickets, count);
+    count++;
+}
+/*==============================================================================================================
+
                                           FILE FUNCTIONS
 
 ================================================================================================================*/
