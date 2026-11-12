@@ -40,6 +40,7 @@ int count = 0;
 
 void inputTicket(BusTicket tickets[], int index);
 void displayTicket(BusTicket tickets[], int index);
+void userGuide(void);
 void displayAllTickets(void);
 void bookTicket(void);
 void cancelTicket(void);
@@ -197,12 +198,15 @@ int main(){
                 displayAllTickets();
                 break;
             case 5:
+                userGuide();
+                break;
+            case 6:
                 printf("Thank you!\n");
                 break;
             default:
                 printf("Invalid option. Please try again.\n");
         }
-    }while(opt != 5);
+    }while(opt != 6);
     saveTickets();
     return 0;
 }
