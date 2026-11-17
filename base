@@ -58,6 +58,7 @@ static int isValidGender(const char *s);
 static int isValidDate(char *s);
 static int isSeatTaken(int seat, const char *date, int direction, int fromKm, int toKm);
 static int showAvailableSeats(const char *date, int direction, int fromKm, int toKm);
+static int findStop(const char *name);
 static int strcasecmp_custom(const char *s1, const char *s2);
 static void clearInput(void);
 /*==============================================================================================================
@@ -170,6 +171,14 @@ static int showAvailableSeats(const char *date, int direction, int fromKm, int t
     }
     printf("\nAvailable seats: %d of %d\n", freeCount, MAX_SEATS);
     return freeCount;
+}
+
+static int findStop(const char *name){
+    for(int i = 0; i < NUM_STOPS; i++){
+        if(strcasecmp_custom(stops[i].name, name) == 0)
+            return i;
+    }
+    return -1;
 }
 
 static int strcasecmp_custom(const char *s1, const char *s2) {
