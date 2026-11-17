@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<math.h>
+#include<ctype.h>
 #include<time.h>
 #define PRICE_PER_KM 20
 #define AVG_SPEED 75
