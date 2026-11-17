@@ -314,28 +314,28 @@ void inputTicket(BusTicket tickets[], int index){
     printf("Enter destination: ");
     scanf(" %49[^\n]", tickets[index].destination);
  
-    /* Work out the route first so we can reject invalid routes early */
+    // Work out the route first so we can reject invalid routes early 
     setRouteDetails(tickets, index);
-    if(tickets[index].routeDistance == 0)
+    BusTicket *t = &tickets[index];
+    if(showAvailableSeats(t->date, t->direction, t->fromKm, t->toKm) == 0){
+        printf("Sorry, this trip is fully booked.\n");
+        t->routeDistance = 0;
         return;
- 
+    }
+
     int seat;
     do{
         printf("Enter seat number (1-%d): ", MAX_SEATS);
-        if(scanf("%d", &seat) != 1){ clearInput(); seat = 0; }
+        if(scanf("%d", &seat) != 1) 
+            seat = 0;
+        clearInput();
         if(seat < 1 || seat > MAX_SEATS)
             printf("Invalid seat number.\n");
-        else if(isSeatTaken(seat, tickets[index].date,
-                            tickets[index].source, tickets[index].destination)){
-            printf("Seat %d is already booked for this trip.\n", seat);
+        else if(isSeatTaken(seat, t->date, t->direction, t->fromKm, t->toKm)){
+            printf("Seat %d is already booked for part of this trip.\n", seat);
             seat = 0;
         }
     } while(seat < 1 || seat > MAX_SEATS);
-    tickets[index].seatNumber = seat;
-    tickets[index].discount = calculateDiscount(tickets[index].age);
-    tickets[index].total_price = calculateTotalPrice(tickets[index].price,tickets[index].discount);
-    tickets[index].ticket_id = generateTicketID();
-    tickets[index].bookingStatus = BOOKED;
 }
 /*==============================================================================================================
 
