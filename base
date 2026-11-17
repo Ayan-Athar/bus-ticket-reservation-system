@@ -3,6 +3,8 @@
 #include<string.h>
 #include<math.h>
 #include<time.h>
+#define PRICE_PER_KM 20
+#define AVG_SPEED 75
 #define MAX_TICKETS 100
 #define MAX_SEATS 40
 #define BOOKED 1
@@ -32,6 +34,16 @@ typedef struct{
 } BusTicket;
 BusTicket tickets[MAX_TICKETS];
 int count = 0;
+int lastTicketID = 1000;
+typedef struct{
+    const char *name;
+    int km;
+} Stop;
+#define NUM_STOPS 6
+static const Stop stops[NUM_STOPS] = {
+    {"Karachi",0},{"Hyderabad",165},{"Sukkur",470},
+    {"Multan",880},{"Lahore",1218},{"Islamabad",1593}
+};
 /*==============================================================================================================
 
                                         FUNCTIONS DECLARATION
@@ -662,7 +674,6 @@ void loadTickets(void){
 ================================================================================================================*/
  
 // 1. Generate Unique Ticket ID
-int lastTicketID = 1000;
 int generateTicketID(void) {
     return ++lastTicketID;
 }
