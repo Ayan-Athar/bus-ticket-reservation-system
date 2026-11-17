@@ -560,3 +560,51 @@ int findTicketByID(int ticket_id) {
     }
     return -1;
 }
+/*==============================================================================================================
+
+                                      USER GUIDE / INFO FUNCTION
+
+================================================================================================================*/
+void userGuide(void){
+    printf("\n================================================================================\n");
+    printf("                     BUS TICKET RESERVATION - USER GUIDE\n");
+    printf("================================================================================\n");
+
+    printf("\n[1] REQUIRED DETAILS FOR BOOKING:\n");
+    printf("  * Passenger Name : Minimum 3 letters; only alphabets, spaces, (.), (-), (') allowed.\n");
+    printf("  * Contact Number : 11-digit mobile number starting with '03' (e.g., 03001234567).\n");
+    printf("  * Age            : Must be between 1 and 120 years.\n");
+    printf("  * Gender         : Male (M), Female (F), or Other.\n");
+    printf("  * Travel Date    : Format dd/mm/yyyy (e.g., 25/11/2026).\n");
+    printf("                     - Same-day or past dates are NOT allowed.\n");
+    printf("                     - Advance booking is open up to 60 days (2 months) ahead.\n");
+    printf("  * Seat Number    : Choose from 1 to %d (already booked seats cannot be selected).\n", MAX_SEATS);
+
+    printf("\n[2] AVAILABLE ROUTES, FARES & TIMINGS (Two-Way):\n");
+    printf("  ------------------------------------------------------------------------------\n");
+    printf("  Route                      | Distance | Duration | Base Fare | Via Stops\n");
+    printf("  ------------------------------------------------------------------------------\n");
+    printf("  Karachi  <-> Lahore        | 1218 km  | 16 hrs   | Rs. 4500  | Hyd, Sukkur, Multan\n");
+    printf("  Karachi  <-> Islamabad     | 1593 km  | 20 hrs   | Rs. 5500  | Hyd, Sukkur, Multan, Lhr\n");
+    printf("  Lahore   <-> Islamabad     |  375 km  |  4 hrs   | Rs. 1800  | Direct\n");
+    printf("  Islamabad <-> Peshawar     |  155 km  |  2 hrs   | Rs. 1000  | Direct\n");
+    printf("  ------------------------------------------------------------------------------\n");
+    printf("  * Note: Direct routes like Karachi-Peshawar or Lahore-Peshawar are not available.\n");
+
+    printf("\n[3] DISCOUNT POLICY:\n");
+    printf("  * Children (Age 12 or below)     : 50%% Discount\n");
+    printf("  * Senior Citizens (Age 60+)      : 30%% Discount\n");
+    printf("  * Regular Passengers (Age 13-59) : No Discount (Full Fare)\n");
+
+    printf("\n[4] OTHER SYSTEM FEATURES & RULES:\n");
+    printf("  * Ticket ID    : Automatically generated (starts from 1001) upon booking.\n");
+    printf("  * Cancel Ticket: Cancel anytime using your Ticket ID; your seat becomes free again.\n");
+    printf("  * Search Ticket: Search existing bookings by Ticket ID or Passenger Name.\n");
+    printf("  * Capacity     : Maximum %d total tickets can be stored in the system.\n", MAX_TICKETS);
+    printf("  * Auto-Save    : Always exit via the Exit option to save records in 'tickets.csv'.\n");
+    printf("================================================================================\n");
+
+    clearInput();
+    printf("Press Enter to return to the Main Menu...");
+    getchar();
+}
