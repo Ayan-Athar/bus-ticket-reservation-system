@@ -31,6 +31,9 @@ typedef struct{
     float total_price;
     char routeDisplay[100];
     int routeDistance;
+    int direction;
+    int fromKm;
+    int toKm;
 } BusTicket;
 BusTicket tickets[MAX_TICKETS];
 int count = 0;
