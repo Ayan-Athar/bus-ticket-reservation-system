@@ -362,6 +362,87 @@ void displayTicket(BusTicket tickets[], int index){
     printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
     printf("-------------------------------------\n");
 }
+
+/*==============================================================================================================
+
+                                          ROUTE DETAILS FUNCTIONS
+
+================================================================================================================*/
+ 
+void setRouteDetails(BusTicket tickets[], int index){
+    BusTicket *t = &tickets[index];
+    char srcIn[50], dstIn[50];
+    int from, to;
+
+    printf("\nAvailable cities: ");
+    for(int i = 0; i < NUM_STOPS; i++){
+    printf("%s", stops[i].name);
+    if(i < NUM_STOPS - 1)
+        printf(", ");
+    else
+        printf("\n");
+    }
+
+    do{
+        printf("Enter source: ");
+        if(scanf(" %49[^\n]", srcIn) != 1) 
+            srcIn[0] = '\0';
+        clearInput();
+        from = findStop(srcIn);
+        if(from == -1) 
+        printf("City not found. Choose from the list.\n");
+    } while(from == -1);
+
+    do{
+        printf("Enter destination: ");
+        if(scanf(" %49[^\n]", dstIn) != 1) 
+            dstIn[0] = '\0';
+        clearInput();
+        to = findStop(dstIn);
+        if(to == -1)
+            printf("City not found. Choose from the list.\n");
+        else if(to == from){
+            printf("Source and destination must be different.\n");
+            to = -1;
+        }
+    } while(to == -1);
+
+    strcpy(t->source, stops[from].name);
+    strcpy(t->destination, stops[to].name);
+
+    int step;
+     if(from < to){
+        step = 1;
+        t->direction = 1;
+        t->fromKm = stops[from].km;
+        t->toKm   = stops[to].km;
+     }
+     else {
+        step = -1;
+        t->direction = -1;
+        t->fromKm = stops[to].km;
+        t->toKm   = stops[from].km;
+     }
+
+     t->routeDisplay[0] = '\0';
+     for(int i = from; ; i += step){
+        if(i != from) 
+            strcat(t->routeDisplay, " -> ");
+        strcat(t->routeDisplay, stops[i].name);
+        if(i == to) 
+            break;
+    }
+
+    t->routeDistance = t->toKm - t->fromKm;   /* always positive now, no abs() needed */
+    t->duration = (t->routeDistance + AVG_SPEED - 1) / AVG_SPEED;
+    t->price = (float)t->routeDistance * PRICE_PER_KM;
+
+    printf("\n--- ROUTE DETAILS ---\n");
+    printf("Route: %s\n", t->routeDisplay);
+    printf("Total Distance: %d km\n", t->routeDistance);
+    printf("Total Duration: %d hours\n", t->duration);
+}
+
 /*==============================================================================================================
 
                                           DISCOUNT FUNCTIONS
