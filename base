@@ -357,6 +357,10 @@ void inputTicket(BusTicket tickets[], int index){
             seat = 0;
         }
     } while(seat < 1 || seat > MAX_SEATS);
+    tickets[index].discount = calculateDiscount(tickets[index].age);
+    tickets[index].total_price = calculateTotalPrice(tickets[index].price, tickets[index].discount);
+    tickets[index].seatNumber = seat;
+    tickets[index].bookingStatus = BOOKED;
 }
 /*==============================================================================================================
 
