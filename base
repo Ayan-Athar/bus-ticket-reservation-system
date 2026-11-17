@@ -608,9 +608,9 @@ void saveTickets(void){
         printf("Error opening file for writing.\n");
         return;
     }
-     fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Date, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount,Total Price, Booking Status\n");
+     fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Date, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status\n");
     for(int i = 0; i < count; i++){
-        fprintf(fp, "%d,%s,%s,%d,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%s\n", 
+        fprintf(fp, "%d,%s,%s,%d,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%d,%d,%d,%s\n", 
                                                                     tickets[i].ticket_id, 
                                                                     tickets[i].name,tickets[i].contact, 
                                                                     tickets[i].age, tickets[i].gender, 
@@ -623,7 +623,10 @@ void saveTickets(void){
                                                                     tickets[i].routeDistance, 
                                                                     tickets[i].price, 
                                                                     tickets[i].discount, 
-                                                                    tickets[i].total_price, 
+                                                                    tickets[i].total_price,
+                                                                    tickets[i].direction,
+                                                                    tickets[i].fromKm,
+                                                                    tickets[i].toKm,
                                                                     tickets[i].bookingStatus==1?"Booked":"Cancelled");
     }
     fclose(fp);
@@ -641,7 +644,7 @@ void loadTickets(void){
     char line[512];
     char status[20];
     fgets(line, sizeof(line), fp); // Read header line
-    while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%19[^\r\n]",
+    while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%d,%d,%d,%19[^\r\n]",
                                                                                           &tickets[count].ticket_id, 
                                                                                           tickets[count].name, 
                                                                                           tickets[count].contact, 
@@ -656,8 +659,11 @@ void loadTickets(void){
                                                                                           &tickets[count].routeDistance, 
                                                                                           &tickets[count].price, 
                                                                                           &tickets[count].discount, 
-                                                                                          &tickets[count].total_price, 
-                                                                                          status) == 16){
+                                                                                          &tickets[count].total_price,
+                                                                                          &tickets[count].direction,
+                                                                                          &tickets[count].fromKm, 
+                                                                                          &tickets[count].toKm, 
+                                                                                          status) == 19){
         tickets[count].bookingStatus= (strcmp(status, "Booked")== 0) ? BOOKED : CANCELLED;
         count++;
         if(tickets[count-1].ticket_id > lastTicketID)
