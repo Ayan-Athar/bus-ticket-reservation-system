@@ -21,6 +21,7 @@ typedef struct{
     int age;
     char gender[10];
     char date[20];
+    int timeSlot;
     int seatNumber;
     char source[50];
     char destination[50];
@@ -73,8 +74,8 @@ static int isValidContact(const char *s);
 static int isValidAge(int age);
 static int isValidGender(const char *s);
 static int isValidDate(char *s);
-static int isSeatTaken(int seat, const char *date, int direction, int fromKm, int toKm);
-static int showAvailableSeats(const char *date, int direction, int fromKm, int toKm);
+static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm);
+static int showAvailableSeats(const char *date, int timeSlot, int direction, int fromKm, int toKm);
 static int findStop(const char *name);
 static int strcasecmp_custom(const char *s1, const char *s2);
 static void clearInput(void);
@@ -165,19 +166,28 @@ static int isValidDate(char *s){
     return 1;
 }
 
-static int isSeatTaken(int seat, const char *date, int direction, int fromKm, int toKm){
+static const char *timeSlotC(int timeSlot) {
+    switch (timeSlot) {
+        case 1: return "09:00 AM";
+        case 2: return "02:00 PM";
+        case 3: return "08:00 PM";
+        default: return "Invalid Slot";
+    }
+}
+
+static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm){
     for(int i = 0; i < count; i++){
-        if(tickets[i].bookingStatus == BOOKED && tickets[i].seatNumber == seat && strcmp(tickets[i].date, date) == 0 && tickets[i].direction == direction && fromKm < tickets[i].toKm && tickets[i].fromKm < toKm)
+        if(tickets[i].bookingStatus == BOOKED && tickets[i].seatNumber == seat && tickets[i].timeSlot == timeSlot && strcmp(tickets[i].date, date) == 0 && tickets[i].direction == direction && fromKm < tickets[i].toKm && tickets[i].fromKm < toKm)
             return 1;
     }
     return 0;
 }
 
-static int showAvailableSeats(const char *date, int direction, int fromKm, int toKm){
+static int showAvailableSeats(const char *date,int timeSlot, int direction, int fromKm, int toKm){
     int freeCount = 0;
-    printf("\n--- SEATS for %s ---\nNote: [XX] = booked seat for part of your trip\n\n", date);
+    printf("\n--- SEATS for %s (Slot: %s) ---\nNote: [XX] = booked seat for part of your trip\n\n", date, timeSlotC(timeSlot));
     for(int s = 1; s <= MAX_SEATS; s++){
-        if(isSeatTaken(s, date, direction, fromKm, toKm))
+        if(isSeatTaken(s, timeSlot, date, direction, fromKm, toKm))
             printf("[XX] ");
         else{
             printf("[%2d] ", s);
@@ -328,11 +338,24 @@ tickets[index].ticket_id = generateTicketID();
         tickets[index].date[0] = '\0';
     clearInput();
     } while(!isValidDate(tickets[index].date));
+
+    // Selecting time slot for the trip
+    printf("\nSelect a time slot:\n");
+    printf("1. 09:00 AM\n2. 02:00 PM\n3. 08:00 PM\n");
+    do {
+        printf("Enter your Slot choice (1-3): ");
+        if(scanf("%d", &tickets[index].timeSlot) != 1) {
+            tickets[index].timeSlot = 0;
+            clearInput();
+        }
+        if(tickets[index].timeSlot < 1 || tickets[index].timeSlot > 3)
+            printf("Invalid selection. Please choose a valid time slot (1-3).\n");
+    } while(tickets[index].timeSlot < 1 || tickets[index].timeSlot > 3);
  
     // Work out the route first so we can reject invalid routes early 
     setRouteDetails(tickets, index);
     BusTicket *t = &tickets[index];
-    if(showAvailableSeats(t->date, t->direction, t->fromKm, t->toKm) == 0){
+    if(showAvailableSeats(t->date,t->timeSlot, t->direction, t->fromKm, t->toKm) == 0){
         printf("Sorry, this trip is fully booked.\n");
         t->routeDistance = 0;
         return;
@@ -346,7 +369,7 @@ tickets[index].ticket_id = generateTicketID();
         clearInput();
         if(seat < 1 || seat > MAX_SEATS)
             printf("Invalid seat number.\n");
-        else if(isSeatTaken(seat, t->date, t->direction, t->fromKm, t->toKm)){
+        else if(isSeatTaken(seat, t->timeSlot, t->date, t->direction, t->fromKm, t->toKm)){
             printf("Seat %d is already booked for part of this trip.\n", seat);
             seat = 0;
         }
@@ -370,6 +393,7 @@ void displayTicket(BusTicket tickets[], int index){
     printf("Age: %d\n", tickets[index].age);
     printf("Gender: %s\n", tickets[index].gender);
     printf("Travel Date: %s\n", tickets[index].date);
+    printf("Time Slot: %s\n", timeSlotC(tickets[index].timeSlot));
     printf("Seat Number: %d\n", tickets[index].seatNumber);
     printf("Source: %s\n", tickets[index].source);
     printf("Destination: %s\n", tickets[index].destination);
@@ -606,13 +630,16 @@ void saveTickets(void){
         printf("Error opening file for writing.\n");
         return;
     }
-     fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Travel Date, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status\n");
+     fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Travel Date, Time Slot, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status\n");
     for(int i = 0; i < count; i++){
-        fprintf(fp, "%d,%s,%s,%d,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%d,%d,%d,%s\n", 
+        fprintf(fp, "%d,%s,%s,%d,%s,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%d,%d,%d,%s\n", 
                                                                     tickets[i].ticket_id, 
-                                                                    tickets[i].name,tickets[i].contact, 
-                                                                    tickets[i].age, tickets[i].gender, 
+                                                                    tickets[i].name,
+                                                                    tickets[i].contact, 
+                                                                    tickets[i].age, 
+                                                                    tickets[i].gender, 
                                                                     tickets[i].date,
+                                                                    timeSlotC(tickets[i].timeSlot),
                                                                     tickets[i].seatNumber, 
                                                                     tickets[i].source, 
                                                                     tickets[i].destination, 
@@ -641,14 +668,16 @@ void loadTickets(void){
     }
     char line[512];
     char status[20];
+    char timeSlotStr[20];
     fgets(line, sizeof(line), fp); // Read header line
-    while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%d,%d,%d,%19[^\r\n]",
+    while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%d,%d,%d,%19[^\r\n]",
                                                                                           &tickets[count].ticket_id, 
                                                                                           tickets[count].name, 
                                                                                           tickets[count].contact, 
                                                                                           &tickets[count].age,  
                                                                                           tickets[count].gender, 
                                                                                           tickets[count].date,
+                                                                                          timeSlotStr,
                                                                                           &tickets[count].seatNumber, 
                                                                                           tickets[count].source, 
                                                                                           tickets[count].destination, 
@@ -661,7 +690,16 @@ void loadTickets(void){
                                                                                           &tickets[count].direction,
                                                                                           &tickets[count].fromKm, 
                                                                                           &tickets[count].toKm, 
-                                                                                          status) == 19){
+                                                                                          status) == 20){
+        if(strcmp(timeSlotStr, "09:00 AM") == 0)
+            tickets[count].timeSlot = 1;
+        else if(strcmp(timeSlotStr, "02:00 PM") == 0)
+            tickets[count].timeSlot = 2;
+        else if(strcmp(timeSlotStr, "08:00 PM") == 0)
+            tickets[count].timeSlot = 3;
+        else
+            tickets[count].timeSlot = 1;
+        
         tickets[count].bookingStatus= (strcmp(status, "Booked")== 0) ? BOOKED : CANCELLED;
         count++;
         if(tickets[count-1].ticket_id > lastTicketID)
@@ -709,6 +747,10 @@ void userGuide(void){
     printf("  * Travel Date    : Format dd/mm/yyyy (e.g., 25/11/2026).\n");
     printf("                     - Same-day or past dates are NOT allowed.\n");
     printf("                     - Advance booking is open up to 60 days (2 months) ahead.\n");
+    printf("  * Time Slots     : 3 Time Slots available for our Service\n");
+    printf("                     - 1. 09:00 AM\n");
+    printf("                     - 2. 02:00 PM\n");
+    printf("                     - 3. 08:00 PM\n");
     printf("  * Seat Number    : Choose from 1 to %d (already booked seats cannot be selected).\n", MAX_SEATS);
 
     printf("\n[2] AVAILABLE CITIES, FARES & TIMINGS (Two-Way):\n");
