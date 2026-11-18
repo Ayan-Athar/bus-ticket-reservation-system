@@ -65,6 +65,8 @@ int calculateDiscount(int age);
 float calculateTotalPrice(float price, int discount);
 void setRouteDetails(BusTicket tickets[], int index);
 int generateTicketID(void);
+void saveTickets(void);
+void loadTickets(void);
 void menu(void);
 static int isValidName(const char *s);
 static int isValidContact(const char *s);
@@ -263,8 +265,9 @@ void menu(void){
         printf("2. Cancel Ticket\n");
         printf("3. Search Ticket\n");
         printf("4. Display All Tickets\n");
-        printf("5. Exit\n");
-        printf("Enter your choice(1-5): ");
+        printf("5. User Guide\n");
+        printf("6. Exit\n");
+        printf("Enter your choice(1-6): ");
 }
 /*==============================================================================================================
 
@@ -273,6 +276,9 @@ void menu(void){
 ================================================================================================================*/
 
 void inputTicket(BusTicket tickets[], int index){
+
+tickets[index].ticket_id = generateTicketID();
+
 //Taking passenger name as input
     do{
     printf("Enter passenger name: ");
@@ -322,13 +328,6 @@ void inputTicket(BusTicket tickets[], int index){
         tickets[index].date[0] = '\0';
     clearInput();
     } while(!isValidDate(tickets[index].date));
-
-
-    printf("Available cities: Karachi, Lahore, Islamabad, Peshawar\n");
-    printf("Enter source: ");
-    scanf(" %49[^\n]", tickets[index].source);
-    printf("Enter destination: ");
-    scanf(" %49[^\n]", tickets[index].destination);
  
     // Work out the route first so we can reject invalid routes early 
     setRouteDetails(tickets, index);
@@ -712,16 +711,24 @@ void userGuide(void){
     printf("                     - Advance booking is open up to 60 days (2 months) ahead.\n");
     printf("  * Seat Number    : Choose from 1 to %d (already booked seats cannot be selected).\n", MAX_SEATS);
 
-    printf("\n[2] AVAILABLE ROUTES, FARES & TIMINGS (Two-Way):\n");
+    printf("\n[2] AVAILABLE CITIES, FARES & TIMINGS (Two-Way):\n");
+    printf("  Cities on the route (in order):\n");
+    printf("  Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore -> Islamabad\n");
+    printf("  * You can travel between ANY two of these cities, in either direction.\n");
+    printf("  * Fare     : Rs. %d per km.\n", PRICE_PER_KM);
+    printf("  * Duration : Distance / %d km/h, rounded up to the next hour.\n", AVG_SPEED);
     printf("  ------------------------------------------------------------------------------\n");
-    printf("  Route                      | Distance | Duration | Base Fare | Via Stops\n");
+    printf("  Route                      | Distance | Duration | Base Fare\n");
     printf("  ------------------------------------------------------------------------------\n");
-    printf("  Karachi  <-> Lahore        | 1218 km  | 16 hrs   | Rs. 4500  | Hyd, Sukkur, Multan\n");
-    printf("  Karachi  <-> Islamabad     | 1593 km  | 20 hrs   | Rs. 5500  | Hyd, Sukkur, Multan, Lhr\n");
-    printf("  Lahore   <-> Islamabad     |  375 km  |  4 hrs   | Rs. 1800  | Direct\n");
-    printf("  Islamabad <-> Peshawar     |  155 km  |  2 hrs   | Rs. 1000  | Direct\n");
+    printf("  Karachi   <-> Hyderabad    |  165 km  |  3 hrs   | Rs. %d\n", 165  * PRICE_PER_KM);
+    printf("  Karachi   <-> Sukkur       |  470 km  |  7 hrs   | Rs. %d\n", 470  * PRICE_PER_KM);
+    printf("  Karachi   <-> Multan       |  880 km  | 12 hrs   | Rs. %d\n", 880  * PRICE_PER_KM);
+    printf("  Karachi   <-> Lahore       | 1218 km  | 17 hrs   | Rs. %d\n", 1218 * PRICE_PER_KM);
+    printf("  Karachi   <-> Islamabad    | 1593 km  | 22 hrs   | Rs. %d\n", 1593 * PRICE_PER_KM);
+    printf("  Lahore    <-> Islamabad    |  375 km  |  5 hrs   | Rs. %d\n", 375  * PRICE_PER_KM);
     printf("  ------------------------------------------------------------------------------\n");
-    printf("  * Note: Direct routes like Karachi-Peshawar or Lahore-Peshawar are not available.\n");
+    printf("  * Other city pairs (e.g. Sukkur-Multan) are charged the same way by distance.\n");
+    printf("  * Discounts (see below) are applied on top of the base fare.\n");
 
     printf("\n[3] DISCOUNT POLICY:\n");
     printf("  * Children (Age 12 or below)     : 50%% Discount\n");
