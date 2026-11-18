@@ -1,0 +1,2 @@
+Ticket ID, Name, Contact Number, Age, Gender, Date, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status
+1001,Ayan,03332262173,12,Male,12/12/2026,1,Karachi,Islamabad,22,Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore -> Islamabad,1593,31860.00,50,15930.00,1,0,1593,Booked
