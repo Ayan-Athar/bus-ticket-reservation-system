@@ -606,7 +606,7 @@ void saveTickets(void){
         printf("Error opening file for writing.\n");
         return;
     }
-     fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Date, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status\n");
+     fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Travel Date, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status\n");
     for(int i = 0; i < count; i++){
         fprintf(fp, "%d,%s,%s,%d,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%d,%d,%d,%s\n", 
                                                                     tickets[i].ticket_id, 
