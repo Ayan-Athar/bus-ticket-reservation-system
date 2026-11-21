@@ -1,11 +1,14 @@
+// Required header files for input/output, memory utilities,string handling, character validation and date/time operations.
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<ctype.h>
 #include<time.h>
+
+// Global constants used for ticket pricing, bus speed, maximum ticket capacity, seat capacity and booking status.
 #define PRICE_PER_KM 20
 #define AVG_SPEED 75
-#define MAX_TICKETS 100
+#define MAX_TICKETS 100      // Global array used to store all booked and cancelled tickets. //
 #define MAX_SEATS 40
 #define BOOKED 1
 #define CANCELLED 0
@@ -14,6 +17,7 @@
                                              STRUCTURE 
 
 ================================================================================================================*/ 
+// Structure representing a city stop and its distance from the starting city to the destination.
 typedef struct{
     int ticket_id;
     char name[50];
@@ -43,6 +47,8 @@ typedef struct{
     const char *name;
     int km;
 } Stop;
+
+// Stores all six cities in their fixed route order along with their respective distances from Karachi.
 #define NUM_STOPS 6
 static const Stop stops[NUM_STOPS] = {
     {"Karachi",0},{"Hyderabad",165},{"Sukkur",470},
@@ -53,7 +59,7 @@ static const Stop stops[NUM_STOPS] = {
                                         FUNCTIONS DECLARATION
 
 ================================================================================================================*/
-
+// Function prototypes for booking, cancellation, searching, displaying tickets, calculations, validation and file handling.
 void inputTicket(BusTicket tickets[], int index);
 void displayTicket(BusTicket tickets[], int index);
 void userGuide(void);
@@ -84,7 +90,7 @@ static void clearInput(void);
                                       CONDITION CHECK FUNCTIONS
 
 ================================================================================================================*/
-
+// Validates the passenger name by allowing letters, spaces and selected punctuation marks only.
 static int isValidName(const char *s){
     int letters = 0;
     for(int i = 0; s[i]; i++){
@@ -96,7 +102,7 @@ static int isValidName(const char *s){
     }
     return letters > 2;
 }
-
+// Checks whether the contact number contains exactly 11 digits and starts with the Pakistani mobile prefix 03.
 static int isValidContact(const char *s){
     if(strlen(s)!=11)
     return 0;
@@ -108,11 +114,11 @@ static int isValidContact(const char *s){
     }
     return 1;
 }
-
+// Checks whether the passenger's age is within the allowed range of 1 to 120 years.
 static int isValidAge(int age){
     return age>0 && age<=120;
 }
-
+// Validates the entered gender against the accepted options: Male, Female or Other.
 static int isValidGender(const char *s){
     if(strcasecmp_custom(s, "m") == 0 || strcasecmp_custom(s, "male") == 0)
         return 1;
@@ -122,7 +128,7 @@ static int isValidGender(const char *s){
         return 1;
     return 0;
 }
-
+// Validates the travel date format, checks date limits and prevents booking for past or same-day dates.
 static int isValidDate(char *s){
     int d, m, y;
     char extra;
@@ -165,7 +171,7 @@ static int isValidDate(char *s){
     sprintf(s, "%02d/%02d/%04d", d, m, y);   // store as dd/mm/yyyy
     return 1;
 }
-
+// Converts the numeric time slot into its corresponding readable departure time.
 static const char *timeSlotC(int timeSlot) {
     switch (timeSlot) {
         case 1: return "09:00 AM";
@@ -174,7 +180,7 @@ static const char *timeSlotC(int timeSlot) {
         default: return "Invalid Slot";
     }
 }
-
+// Checks whether a particular seat is already booked for the selected date, time slot and overlapping route.
 static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm){
     for(int i = 0; i < count; i++){
         if(tickets[i].bookingStatus == BOOKED && tickets[i].seatNumber == seat && tickets[i].timeSlot == timeSlot && strcmp(tickets[i].date, date) == 0 && tickets[i].direction == direction && fromKm < tickets[i].toKm && tickets[i].fromKm < toKm)
@@ -182,7 +188,7 @@ static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, 
     }
     return 0;
 }
-
+// Displays all seats and identifies which seats are available or already booked for the selected trip.
 static int showAvailableSeats(const char *date,int timeSlot, int direction, int fromKm, int toKm){
     int freeCount = 0;
     printf("\n--- SEATS for %s (Slot: %s) ---\nNote: [XX] = booked seat for part of your trip\n\n", date, timeSlotC(timeSlot));
@@ -199,7 +205,7 @@ static int showAvailableSeats(const char *date,int timeSlot, int direction, int 
     printf("\nAvailable seats: %d of %d\n", freeCount, MAX_SEATS);
     return freeCount;
 }
-
+// Searches for a city in the predefined stops array and returns its index if found.
 static int findStop(const char *name){
     for(int i = 0; i < NUM_STOPS; i++){
         if(strcasecmp_custom(stops[i].name, name) == 0)
@@ -207,7 +213,7 @@ static int findStop(const char *name){
     }
     return -1;
 }
-
+// Compares two strings without considering uppercase and lowercase differences.
 static int strcasecmp_custom(const char *s1, const char *s2) {
     while (*s1 && *s2) {
         if (tolower((unsigned char)*s1) != tolower((unsigned char)*s2))
@@ -217,7 +223,7 @@ static int strcasecmp_custom(const char *s1, const char *s2) {
     }
     return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
 }
- 
+// Clears the remaining characters from the input buffer until a newline or end-of-file is encountered.
 static void clearInput(void){
     int c;
     while((c = getchar()) != '\n' && c != EOF);
@@ -228,8 +234,10 @@ static void clearInput(void){
                                             MAIN FUNCTION 
 
 ================================================================================================================*/
-
+// Main entry point of the program.
+// Loads previously saved tickets, displays the main menu, handles user selections and saves ticket records on exit.
 int main(){
+  // Restore previously saved booking records when the program starts.
     loadTickets();
     int opt;
     do{
@@ -261,6 +269,7 @@ int main(){
                 printf("Invalid option. Please try again.\n");
         }
     }while(opt != 6);
+  // Save all ticket records before terminating the program.
     saveTickets();
     return 0;
 }
@@ -269,6 +278,7 @@ int main(){
                                           MENU FUNCTIONS
 
 ================================================================================================================*/
+// Displays the main menu and all available operations of Our Bus Ticket Reservation System.
 void menu(void){
         printf("\n\nBus Ticket Reservation System\n");
         printf("1. Book Ticket\n");
@@ -284,7 +294,7 @@ void menu(void){
                                           INPUT FUNCTIONS
 
 ================================================================================================================*/
-
+// Collects passenger details, validates user inputs, selects the travel route and time slot, checks seat availability and completes ticket information.
 void inputTicket(BusTicket tickets[], int index){
 
 tickets[index].ticket_id = generateTicketID();
@@ -384,7 +394,7 @@ tickets[index].ticket_id = generateTicketID();
                                           DISPLAY FUNCTIONS
 
 ================================================================================================================*/
-
+// Displays all details of a particular ticket, including passenger information, route, fare and status.
 void displayTicket(BusTicket tickets[], int index){
     printf("\n-------------------------------------\n");
     printf("Ticket ID: %d\n", tickets[index].ticket_id);
@@ -411,7 +421,8 @@ void displayTicket(BusTicket tickets[], int index){
                                           ROUTE DETAILS FUNCTIONS
 
 ================================================================================================================*/
- 
+// Takes source and destination cities from the user,
+// determines the travel direction, builds the route display and calculates total distance, duration and ticket price.
 void setRouteDetails(BusTicket tickets[], int index){
     BusTicket *t = &tickets[index];
     char srcIn[50], dstIn[50];
@@ -449,11 +460,12 @@ void setRouteDetails(BusTicket tickets[], int index){
             to = -1;
         }
     } while(to == -1);
-
+    // Store the selected source and destination city names in the ticket record.
     strcpy(t->source, stops[from].name);
     strcpy(t->destination, stops[to].name);
 
     int step;
+  // Determine the direction of travel.
      if(from < to){
         step = 1;
         t->direction = 1;
@@ -466,7 +478,7 @@ void setRouteDetails(BusTicket tickets[], int index){
         t->fromKm = stops[to].km;
         t->toKm   = stops[from].km;
      }
-
+    // Build the complete route string by joining all intermediate cities between source and destination.
      t->routeDisplay[0] = '\0';
      for(int i = from; ; i += step){
         if(i != from) 
@@ -475,7 +487,7 @@ void setRouteDetails(BusTicket tickets[], int index){
         if(i == to) 
             break;
     }
-
+    // Calculate route distance, estimated travel duration  and base fare using the predefined speed and price per kilometer.
     t->routeDistance = t->toKm - t->fromKm;   /* always positive now, no abs() needed */
     t->duration = (t->routeDistance + AVG_SPEED - 1) / AVG_SPEED;
     t->price = (float)t->routeDistance * PRICE_PER_KM;
@@ -491,7 +503,7 @@ void setRouteDetails(BusTicket tickets[], int index){
                                           DISCOUNT FUNCTIONS
 
 ================================================================================================================*/
-
+// Returns the applicable discount percentage according to the passenger's age category.
 int calculateDiscount(int age){
     if(age<=12)
         return 50;
@@ -505,7 +517,7 @@ int calculateDiscount(int age){
                                           TOTAL PRICE FUNCTION
 
 ================================================================================================================*/
-
+// Returns the final ticket price after subtracting the applicable discount from the base fare.
 float calculateTotalPrice(float price, int discount){
     return price - (price * discount / 100.0f);
 }
@@ -519,7 +531,8 @@ static int isRoute(const char *srcInput, const char *destInput, const char *city
                                           BOOKING FUNCTIONS
 
 ================================================================================================================*/
- 
+// Handles the complete ticket booking process.
+// Checks ticket capacity, collects passenger information, confirms successful booking and updates the ticket count.
 void bookTicket(void){
     if(count >= MAX_TICKETS){
         printf("\nNo more tickets can be booked.\n");
@@ -542,7 +555,8 @@ void bookTicket(void){
                                           CANCEL FUNCTIONS
 
 ================================================================================================================*/
- 
+// Cancels an existing ticket using its ticket ID.
+// Checks whether the ticket exists and is not already cancelled, then updates its booking status and releases its seat.
 void cancelTicket(void){
     int id;
     printf("Enter ticket ID to cancel: ");
@@ -567,7 +581,7 @@ void cancelTicket(void){
                                           SEARCH FUNCTIONS
 
 ================================================================================================================*/
- 
+// Allows users to search for tickets using a ticket ID.
 void searchTicket(void){
     int choice;
     printf("\nSearch by:\n1. Ticket ID\n2. Passenger Name\nChoice: ");
@@ -609,7 +623,7 @@ void searchTicket(void){
                                      DISPLAY ALL TICKETS FUNCTION
 
 ================================================================================================================*/
- 
+// Displays all matching tickets.
 void displayAllTickets(void){
     if(count == 0){
         printf("\nNo tickets booked yet.\n");
@@ -624,6 +638,7 @@ void displayAllTickets(void){
                                           FILE FUNCTIONS
 
 ================================================================================================================*/
+// Saves all ticket records into tickets.csv so that booking information can be restored later.
 void saveTickets(void){
     FILE *fp = fopen("tickets.csv", "w");
     if(fp == NULL){
@@ -657,9 +672,8 @@ void saveTickets(void){
     fclose(fp);
 }
 
-
-
-
+// Reads previously saved ticket records from tickets.csv,
+// restores their booking details and updates the ticket count and last generated ticket ID.
 void loadTickets(void){
     FILE *fp = fopen("tickets.csv", "r");
     if(fp == NULL){
@@ -669,6 +683,7 @@ void loadTickets(void){
     char line[512];
     char status[20];
     char timeSlotStr[20];
+  // Skip the CSV header because it contains column names rather than actual ticket records.
     fgets(line, sizeof(line), fp); // Read header line
     while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%d,%d,%d,%19[^\r\n]",
                                                                                           &tickets[count].ticket_id, 
@@ -690,7 +705,7 @@ void loadTickets(void){
                                                                                           &tickets[count].direction,
                                                                                           &tickets[count].fromKm, 
                                                                                           &tickets[count].toKm, 
-                                                                                          status) == 20){
+         // Convert the saved time slot text back into its corresponding numeric time slot value.                                                                                 status) == 20){
         if(strcmp(timeSlotStr, "09:00 AM") == 0)
             tickets[count].timeSlot = 1;
         else if(strcmp(timeSlotStr, "02:00 PM") == 0)
@@ -699,7 +714,7 @@ void loadTickets(void){
             tickets[count].timeSlot = 3;
         else
             tickets[count].timeSlot = 1;
-        
+        // Restore the ticket's booking status from the saved text value.
         tickets[count].bookingStatus= (strcmp(status, "Booked")== 0) ? BOOKED : CANCELLED;
         count++;
         if(tickets[count-1].ticket_id > lastTicketID)
@@ -715,12 +730,12 @@ void loadTickets(void){
 
 ================================================================================================================*/
  
-// 1. Generate Unique Ticket ID
+// 1. Generate Unique Ticket ID by incrementing the last used ticket ID.
 int generateTicketID(void) {
     return ++lastTicketID;
 }
  
-// 2. Find Ticket Index By ID
+// 2. Find Ticket Index By ID and returns its array index if found, otherwise -1.
 int findTicketByID(int ticket_id) {
     for (int i = 0; i < count; i++) {
         if (tickets[i].ticket_id == ticket_id) {
@@ -734,6 +749,9 @@ int findTicketByID(int ticket_id) {
                                       USER GUIDE / INFO FUNCTION
 
 ================================================================================================================*/
+// Displays instructions about ticket booking,
+// passenger requirements, available routes, fares,
+// time slots, discount policies and other system features.
 void userGuide(void){
     printf("\n================================================================================\n");
     printf("                     BUS TICKET RESERVATION - USER GUIDE\n");
