@@ -683,7 +683,6 @@ void loadTickets(void){
     char line[512];
     char status[20];
     char timeSlotStr[20];
-  // Skip the CSV header because it contains column names rather than actual ticket records.
     fgets(line, sizeof(line), fp); // Read header line
     while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%d,%d,%d,%19[^\r\n]",
                                                                                           &tickets[count].ticket_id, 
@@ -705,7 +704,7 @@ void loadTickets(void){
                                                                                           &tickets[count].direction,
                                                                                           &tickets[count].fromKm, 
                                                                                           &tickets[count].toKm, 
-         // Convert the saved time slot text back into its corresponding numeric time slot value.                                                                                 status) == 20){
+                                                                                          status) == 20){
         if(strcmp(timeSlotStr, "09:00 AM") == 0)
             tickets[count].timeSlot = 1;
         else if(strcmp(timeSlotStr, "02:00 PM") == 0)
@@ -714,7 +713,7 @@ void loadTickets(void){
             tickets[count].timeSlot = 3;
         else
             tickets[count].timeSlot = 1;
-        // Restore the ticket's booking status from the saved text value.
+        
         tickets[count].bookingStatus= (strcmp(status, "Booked")== 0) ? BOOKED : CANCELLED;
         count++;
         if(tickets[count-1].ticket_id > lastTicketID)
