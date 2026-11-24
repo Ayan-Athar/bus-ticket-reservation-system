@@ -1,13 +1,15 @@
+// ==================== HEADER FILES ====================
 // Required header files for input/output, memory utilities,string handling, character validation and date/time operations.
 #include<stdio.h>
-#include<stdlib.h>
+#include<stdlib.h> 
 #include<string.h>
-#include<ctype.h>
+#include<ctype.h> 
 #include<time.h>
 
+// ==================== GLOBAL CONSTANTS ====================
 // Global constants used for ticket pricing, bus speed, maximum ticket capacity, seat capacity and booking status.
 #define PRICE_PER_KM 20
-#define AVG_SPEED 75
+#define AVG_SPEED 75          // Average bus speed in km/h to estimate travel duration
 #define MAX_TICKETS 100      // Global array used to store all booked and cancelled tickets. //
 #define MAX_SEATS 40
 #define BOOKED 1
@@ -44,7 +46,7 @@ BusTicket tickets[MAX_TICKETS];
 int count = 0;
 int lastTicketID = 1000;
 typedef struct{
-    const char *name;
+    const char *name;      // Pointer to constant city name string
     int km;
 } Stop;
 
@@ -60,6 +62,8 @@ static const Stop stops[NUM_STOPS] = {
 
 ================================================================================================================*/
 // Function prototypes for booking, cancellation, searching, displaying tickets, calculations, validation and file handling.
+
+// Core Ticket Management & Menu Functions
 void inputTicket(BusTicket tickets[], int index);
 void displayTicket(BusTicket tickets[], int index);
 void userGuide(void);
@@ -75,6 +79,8 @@ int generateTicketID(void);
 void saveTickets(void);
 void loadTickets(void);
 void menu(void);
+
+// Internal Helper & Input Validation Functions (Scoped to this file using 'static')
 static int isValidName(const char *s);
 static int isValidContact(const char *s);
 static int isValidAge(int age);
@@ -83,14 +89,14 @@ static int isValidDate(char *s);
 static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm);
 static int showAvailableSeats(const char *date, int timeSlot, int direction, int fromKm, int toKm);
 static int findStop(const char *name);
-static int strcasecmp_custom(const char *s1, const char *s2);
-static void clearInput(void);
+static int strcasecmp_custom(const char *s1, const char *s2);     // Compares two strings ignoring uppercase/lowercase differences
+static void clearInput(void);                   // Flushes leftover characters from the standard input buffer
 /*==============================================================================================================
 
                                       CONDITION CHECK FUNCTIONS
 
 ================================================================================================================*/
-// Validates the passenger name by allowing letters, spaces and selected punctuation marks only.
+// Validates the passenger name by allowing : letters, spaces, dots, hyphens, and apostrophes.
 static int isValidName(const char *s){
     int letters = 0;
     for(int i = 0; s[i]; i++){
@@ -98,26 +104,29 @@ static int isValidName(const char *s){
         if(isalpha(c))
             letters++;
         else if(c != ' ' && c != '.' && c != '-' && c != '\'')
-            return 0;              // digits, commas and other symbols
+            return 0;                 // Reject digits, commas, or invalid special characters
     }
-    return letters > 2;
+    return letters > 2;              // Ensure name has at least 3 actual letters
 }
-// Checks whether the contact number contains exactly 11 digits and starts with the Pakistani mobile prefix 03.
+
+// Validates Pakistani mobile contact format: must be exactly 11 digits starting with "03"
 static int isValidContact(const char *s){
     if(strlen(s)!=11)
-    return 0;
+    return 0;                        // Reject if length is not 11
     if(s[0]!='0' || s[1]!='3')
-    return 0;
+    return 0;                        // Reject if prefix is not "03"
     for(int i=0;i<11;i++){
         if(!isdigit((unsigned char)s[i]))
-        return 0;
+        return 0;                    // Reject if any character is non-numeric
     }
     return 1;
 }
+
 // Checks whether the passenger's age is within the allowed range of 1 to 120 years.
 static int isValidAge(int age){
     return age>0 && age<=120;
 }
+
 // Validates the entered gender against the accepted options: Male, Female or Other.
 static int isValidGender(const char *s){
     if(strcasecmp_custom(s, "m") == 0 || strcasecmp_custom(s, "male") == 0)
@@ -128,10 +137,13 @@ static int isValidGender(const char *s){
         return 1;
     return 0;
 }
+
 // Validates the travel date format, checks date limits and prevents booking for past or same-day dates.
 static int isValidDate(char *s){
     int d, m, y;
     char extra;
+  
+  // Extract day, month, year; 'extra' catches invalid text at the end (e.g., "12/05/2026abc").
     if(sscanf(s, "%d/%d/%d%c", &d, &m, &y, &extra) != 3){
         printf("Use the format dd/mm/yyyy.\n");
         return 0;
@@ -149,7 +161,7 @@ static int isValidDate(char *s){
         return 0;
     }
 
-    /* today's date from the system clock */
+    // Fetch current system date using <time.h>.
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     int today = (t->tm_year + 1900) * 365 + (t->tm_mon + 1) * 30 + t->tm_mday;
@@ -168,7 +180,7 @@ static int isValidDate(char *s){
         return 0;
     }
 
-    sprintf(s, "%02d/%02d/%04d", d, m, y);   // store as dd/mm/yyyy
+    sprintf(s, "%02d/%02d/%04d", d, m, y);   // Stores as dd/mm/yyyy
     return 1;
 }
 // Converts the numeric time slot into its corresponding readable departure time.
@@ -183,12 +195,19 @@ static const char *timeSlotC(int timeSlot) {
 // Checks whether a particular seat is already booked for the selected date, time slot and overlapping route.
 static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm){
     for(int i = 0; i < count; i++){
-        if(tickets[i].bookingStatus == BOOKED && tickets[i].seatNumber == seat && tickets[i].timeSlot == timeSlot && strcmp(tickets[i].date, date) == 0 && tickets[i].direction == direction && fromKm < tickets[i].toKm && tickets[i].fromKm < toKm)
+        if(tickets[i].bookingStatus == BOOKED && 
+           tickets[i].seatNumber == seat && 
+           tickets[i].timeSlot == timeSlot && 
+           strcmp(tickets[i].date, date) == 0 &&
+           tickets[i].direction == direction && 
+           fromKm < tickets[i].toKm && tickets[i].fromKm < toKm)     // Overlap condition
             return 1;
     }
     return 0;
 }
+
 // Displays all seats and identifies which seats are available or already booked for the selected trip.
+// Prints a 5-column visual seat map ([XX] = booked, [01] = free).
 static int showAvailableSeats(const char *date,int timeSlot, int direction, int fromKm, int toKm){
     int freeCount = 0;
     printf("\n--- SEATS for %s (Slot: %s) ---\nNote: [XX] = booked seat for part of your trip\n\n", date, timeSlotC(timeSlot));
@@ -200,12 +219,13 @@ static int showAvailableSeats(const char *date,int timeSlot, int direction, int 
             freeCount++;
         }
         if(s % 5 == 0) 
-        printf("\n");
+        printf("\n");          // New row after every 5 seats
     }
     printf("\nAvailable seats: %d of %d\n", freeCount, MAX_SEATS);
     return freeCount;
 }
-// Searches for a city in the predefined stops array and returns its index if found.
+
+// Searches for a city name in the 'stops' array (case-insensitive) and returns its index if found or -1
 static int findStop(const char *name){
     for(int i = 0; i < NUM_STOPS; i++){
         if(strcasecmp_custom(stops[i].name, name) == 0)
@@ -213,6 +233,8 @@ static int findStop(const char *name){
     }
     return -1;
 }
+
+// Custom case-insensitive string comparison function (returns 0 if strings match)
 // Compares two strings without considering uppercase and lowercase differences.
 static int strcasecmp_custom(const char *s1, const char *s2) {
     while (*s1 && *s2) {
@@ -223,6 +245,7 @@ static int strcasecmp_custom(const char *s1, const char *s2) {
     }
     return tolower((unsigned char)*s1) - tolower((unsigned char)*s2);
 }
+
 // Clears the remaining characters from the input buffer until a newline or end-of-file is encountered.
 static void clearInput(void){
     int c;
@@ -237,15 +260,17 @@ static void clearInput(void){
 // Main entry point of the program.
 // Loads previously saved tickets, displays the main menu, handles user selections and saves ticket records on exit.
 int main(){
-  // Restore previously saved booking records when the program starts.
+  // Load previously saved ticket records from 'tickets.csv' into memory on startup
     loadTickets();
     int opt;
     do{
-        menu();
+        menu();    // Display main menu options
+      // Validate that user entered a numeric choice; flush buffer if non-numeric input is given
         if(scanf("%d", &opt) != 1){
             clearInput();
             opt = 0;
         }
+      // Route execution based on the user's menu selection
         switch(opt){
             case 1:
                 bookTicket();
@@ -269,6 +294,7 @@ int main(){
                 printf("Invalid option. Please try again.\n");
         }
     }while(opt != 6);
+  
   // Save all ticket records before terminating the program.
     saveTickets();
     return 0;
@@ -294,12 +320,14 @@ void menu(void){
                                           INPUT FUNCTIONS
 
 ================================================================================================================*/
-// Collects passenger details, validates user inputs, selects the travel route and time slot, checks seat availability and completes ticket information.
+// Collects passenger details, validates user inputs, selects the travel route 
+// and time slot, checks seat availability and completes ticket information.
 void inputTicket(BusTicket tickets[], int index){
-
+  
+// Assign a new unique ticket ID (e.g., 1001, 1002...)
 tickets[index].ticket_id = generateTicketID();
 
-//Taking passenger name as input
+// Taking passenger name as input
     do{
     printf("Enter passenger name: ");
     if(scanf(" %49[^\n]", tickets[index].name) != 1)
@@ -309,7 +337,7 @@ tickets[index].ticket_id = generateTicketID();
         printf("Name must contain letters only (no numbers).\n");
     } while(!isValidName(tickets[index].name));
 
-//Taking contact number as input and validating it to be in the format 03XXXXXXXXX
+// Taking contact number as input and validating it to be in the format 03XXXXXXXXX
     do{
         printf("Enter contact number(03XXXXXXXXX): ");
         if(scanf(" %14[^\n]", tickets[index].contact) !=1){    
@@ -320,7 +348,7 @@ tickets[index].ticket_id = generateTicketID();
             printf("Please Enter a valid contact number\n");
     } while(!isValidContact(tickets[index].contact));
 
-//Taking age as input and validating it to be between 1 and 120 
+// Taking age as input and validating it to be between 1 and 120 
     do{
         printf("Enter age(1-120): ");
         if(scanf("%d", &tickets[index].age) != 1){
@@ -331,7 +359,7 @@ tickets[index].ticket_id = generateTicketID();
             printf("Enter correct age.\n");
     } while(!isValidAge(tickets[index].age));
 
-//Taking Gender as input
+// Taking Gender as input and validating it to be (MALE/FEMALE/OTHER)
    do{
     printf("Enter gender (Male/Female/Other): ");
     if(scanf(" %9[^\n]", tickets[index].gender) != 1)
@@ -341,7 +369,7 @@ tickets[index].ticket_id = generateTicketID();
         printf("Enter correct gender.\n");
     } while(!isValidGender(tickets[index].gender));
 
-//Taking travel date as input and validating it to be in the format dd/mm/yyyy and it must be within 2 months ahead 
+// Taking travel date as input and validating it to be in the format dd/mm/yyyy and it must be within 2 months ahead 
     do{
     printf("Enter travel date (dd/mm/yyyy): ");
     if(scanf(" %19[^\n]", tickets[index].date) != 1)
@@ -364,13 +392,14 @@ tickets[index].ticket_id = generateTicketID();
  
     // Work out the route first so we can reject invalid routes early 
     setRouteDetails(tickets, index);
-    BusTicket *t = &tickets[index];
-    if(showAvailableSeats(t->date,t->timeSlot, t->direction, t->fromKm, t->toKm) == 0){
+    BusTicket *t = &tickets[index];      // Creating a pointer shortcut to access current ticket fields easily
+    if(showAvailableSeats(t->date,t->timeSlot, t->direction, t->fromKm, t->toKm) == 0){    // Show available seats; if 0 seats are free, mark booking as failed and exit early
         printf("Sorry, this trip is fully booked.\n");
         t->routeDistance = 0;
         return;
     }
-
+  
+    // Validating seat selection (must be 1-40 and not already taken)
     int seat;
     do{
         printf("Enter seat number (1-%d): ", MAX_SEATS);
@@ -381,13 +410,13 @@ tickets[index].ticket_id = generateTicketID();
             printf("Invalid seat number.\n");
         else if(isSeatTaken(seat, t->timeSlot, t->date, t->direction, t->fromKm, t->toKm)){
             printf("Seat %d is already booked for part of this trip.\n", seat);
-            seat = 0;
+            seat = 0;        // Reset seat to 0 so the loop repeats
         }
-    } while(seat < 1 || seat > MAX_SEATS);
-    tickets[index].discount = calculateDiscount(tickets[index].age);
-    tickets[index].total_price = calculateTotalPrice(tickets[index].price, tickets[index].discount);
+    } while(seat < 1 || seat > MAX_SEATS);     
+    tickets[index].discount = calculateDiscount(tickets[index].age);        
+    tickets[index].total_price = calculateTotalPrice(tickets[index].price, tickets[index].discount);    // Calculate final price with discount 
     tickets[index].seatNumber = seat;
-    tickets[index].bookingStatus = BOOKED;
+    tickets[index].bookingStatus = BOOKED;             // Confirm booking status
 }
 /*==============================================================================================================
 
@@ -415,6 +444,7 @@ void displayTicket(BusTicket tickets[], int index){
     printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
     printf("-------------------------------------\n");
 }
+
 
 /*==============================================================================================================
 
