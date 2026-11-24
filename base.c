@@ -522,10 +522,6 @@ float calculateTotalPrice(float price, int discount){
     return price - (price * discount / 100.0f);
 }
  
-static int isRoute(const char *srcInput, const char *destInput, const char *cityA, const char *cityB) {
-    return (strcasecmp_custom(srcInput, cityA) == 0 && strcasecmp_custom(destInput, cityB) == 0) ||
-           (strcasecmp_custom(srcInput, cityB) == 0 && strcasecmp_custom(destInput, cityA) == 0);
-}
 /*==============================================================================================================
 
                                           BOOKING FUNCTIONS
