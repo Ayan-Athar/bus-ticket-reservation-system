@@ -383,8 +383,12 @@ tickets[index].ticket_id = generateTicketID();
     } while(!isValidDate(tickets[index].date));
 
     // Selecting time slot for the trip
-    printf("\nSelect a time slot:\n");
-    printf("1. 09:00 AM\n2. 02:00 PM\n3. 08:00 PM\n");
+    printf("\n+----------------------------------+\n");
+    printf("| Select a time slot:              |\n");
+    printf("| 1. 09:00 AM                      |\n");
+    printf("| 2. 02:00 PM                      |\n");
+    printf("| 3. 08:00 PM                      |\n");
+    printf("+----------------------------------+\n");
     do {
         printf("Enter your Slot choice (1-3): ");
         if(scanf("%d", &tickets[index].timeSlot) != 1) {
@@ -637,7 +641,12 @@ void cancelTicket(void){
 void searchTicket(void){
     int choice,done=0;
     do{
-        printf("\nSearch by:\n1. Ticket ID\n2. Passenger Name\nEnter Your Choice(0 to exit): ");
+        printf("\n+----------------------------------+\n");
+        printf("| Search by:                       |\n");
+        printf("| 1. Ticket ID                     |\n");
+        printf("| 2. Passenger Name                |\n");
+        printf("+----------------------------------+\n");
+        printf("Enter Your Choice(0 to exit): ");
         if(scanf("%d", &choice) != 1){
             clearInput();
             printf("Invalid input.\n");
