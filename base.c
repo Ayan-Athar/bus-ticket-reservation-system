@@ -595,23 +595,31 @@ void bookTicket(void){
 // Cancels an existing ticket using its ticket ID.
 // Checks whether the ticket exists and is not already cancelled, then updates its booking status and releases its seat.
 void cancelTicket(void){
-    int id;
-    printf("Enter ticket ID to cancel: ");
-    if(scanf("%d", &id) != 1){
-        clearInput();
-        printf("Invalid input.\n");
-        return;
-    }
- 
-    int idx = findTicketByID(id);
-    if(idx == -1){
-        printf("Ticket not found.\n");
-    } else if(tickets[idx].bookingStatus == CANCELLED){
-        printf("This ticket is already cancelled.\n");
-    } else {
-        tickets[idx].bookingStatus = CANCELLED;
-        printf("Ticket %d cancelled.\nSeat %d is now free.\n", id, tickets[idx].seatNumber);
-    }
+    int id,done=0,idx;
+    do{
+        printf("Enter ticket ID to cancel(0 to exit): ");
+        if(scanf("%d", &id) != 1){
+            clearInput();
+            printf("Please enter a valid Ticket ID.\n");
+            continue;
+            }
+        if(id == 0){
+            return;
+        }
+        idx = findTicketByID(id);
+        if(idx == -1){
+            printf("Ticket not found.\n");
+        } 
+        else if(tickets[idx].bookingStatus == CANCELLED){
+            printf("This ticket is already cancelled.\n");
+            done = 1;
+        }
+        else {
+            tickets[idx].bookingStatus = CANCELLED;
+            printf("Ticket %d cancelled.\nSeat %d is now free.\n", id, tickets[idx].seatNumber);
+            done=1;
+        }
+    }while (!done);
 }
 /*==============================================================================================================
 
