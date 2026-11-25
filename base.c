@@ -264,6 +264,15 @@ static void clearInput(void){
 int main(){
   // Load previously saved ticket records from 'tickets.csv' into memory on startup
     loadTickets();
+    printf("\n+============================================================================+\n");
+    printf("|                                                                            |\n");
+    printf("|                 WELCOME TO BUS TICKET RESERVATION SYSTEM                   |\n");
+    printf("|                                                                            |\n");
+    printf("|                     YOUR JOURNEY, OUR PRIORITY                             |\n");
+    printf("|                                                                            |\n");
+    printf("|                  SAFE  |  RELIABLE  |  CONVENIENT                          |\n");
+    printf("|                                                                            |\n");
+    printf("+============================================================================+\n");
     int opt;
     do{
         menu();    // Display main menu options
@@ -290,7 +299,15 @@ int main(){
                 userGuide();
                 break;
             case 6:
-                printf("Thank you!\n");
+                printf("\n+============================================================================+\n");
+                printf("|                                                                            |\n");
+                printf("|                       THANK YOU FOR CHOOSING US!                           |\n");
+                printf("|                                                                            |\n");
+                printf("|                 All records have been saved successfully.                  |\n");
+                printf("|                                                                            |\n");
+                printf("|              WISHING YOU A SAFE AND COMFORTABLE JOURNEY!                   |\n");
+                printf("|                                                                            |\n");
+                printf("+============================================================================+\n");
                 break;
             default:
                 printf("Invalid option. Please try again.\n");
@@ -308,17 +325,15 @@ int main(){
 ================================================================================================================*/
 // Displays the main menu and all available operations of Our Bus Ticket Reservation System.
 void menu(void){
-    printf("\n\n+----------------------------------+\n");
-    printf("|   Bus Ticket Reservation System  |\n");
-    printf("+----------------------------------+\n");
-    printf("| 1. Book Ticket                   |\n");
-    printf("| 2. Cancel Ticket                 |\n");
-    printf("| 3. Search Ticket                 |\n");
-    printf("| 4. Display All Tickets           |\n");
-    printf("| 5. User Guide                    |\n");
-    printf("| 6. Exit                          |\n");
-    printf("+----------------------------------+\n");
-    printf("Enter your choice(1-6): ");
+    printf("\n+----------------------------------------------------------------------------+\n");
+    printf("|                        BUS TICKET RESERVATION SYSTEM                       |\n");
+    printf("+-------------------------------------+--------------------------------------+\n");
+    printf("| 1. Book Ticket                      | 4. Display All Tickets               |\n");
+    printf("| 2. Cancel Ticket                    | 5. User Guide                        |\n");
+    printf("| 3. Search Ticket                    | 6. Exit                              |\n");
+    printf("+-------------------------------------+--------------------------------------+\n");
+    printf("Enter your choice (1-6): ");
+    
 }
 /*==============================================================================================================
 
@@ -434,7 +449,9 @@ tickets[index].ticket_id = generateTicketID();
 ================================================================================================================*/
 // Displays all details of a particular ticket, including passenger information, route, fare and status.
 void displayTicket(BusTicket tickets[], int index){
-    printf("\n+---------------------------------------------------+\n");
+    printf("\n+----------------------------------------------------+\n");
+    printf("|               BUS TICKET / BOARDING PASS           |\n");
+    printf("+----------------------------------------------------+\n");
     printf("| Ticket ID: %d\n", tickets[index].ticket_id);
     printf("| Passenger Name: %s\n", tickets[index].name);
     printf("| Contact Number: %s\n", tickets[index].contact);
