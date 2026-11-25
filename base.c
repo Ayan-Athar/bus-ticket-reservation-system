@@ -628,40 +628,61 @@ void cancelTicket(void){
 ================================================================================================================*/
 // Allows users to search for tickets using a ticket ID.
 void searchTicket(void){
-    int choice;
-    printf("\nSearch by:\n1. Ticket ID\n2. Passenger Name\nChoice: ");
-    if(scanf("%d", &choice) != 1){
-        clearInput();
-        printf("Invalid input.\n");
-        return;
-    }
- 
-    if(choice == 1){
-        int id;
-        printf("Enter ticket ID: ");
-        if(scanf("%d", &id) != 1){
+    int choice,done=0;
+    do{
+        printf("\nSearch by:\n1. Ticket ID\n2. Passenger Name\nEnter Your Choice(0 to exit): ");
+        if(scanf("%d", &choice) != 1){
             clearInput();
             printf("Invalid input.\n");
+            continue;
+        }
+        if(choice == 0){
             return;
         }
-        int idx = findTicketByID(id);
-        if(idx == -1) printf("Ticket not found.\n");
-        else displayTicket(tickets, idx);
-    } else if(choice == 2){
-        char name[50];
-        int found = 0;
-        printf("Enter passenger name: ");
-        scanf(" %49[^\n]", name);
-        for(int i = 0; i < count; i++){
-            if(strcasecmp_custom(tickets[i].name, name) == 0){
-                displayTicket(tickets, i);
-                found = 1;
+        if(choice == 1){
+            int id,idx,found=0;
+            do{
+                printf("Enter ticket ID: ");
+                if(scanf("%d", &id) != 1){
+                    clearInput();
+                    printf("Invalid input.\n");
+                    continue;
+                }
+                idx = findTicketByID(id);
+                if(idx == -1) 
+                    printf("Ticket not found.\n");
+                else{ 
+                    displayTicket(tickets, idx);
+                    found=1;
+                }
+            }while(!found);
+            if(found)
+                done = 1;
+        } 
+        else if(choice == 2){
+            char name[50];
+            int found = 0;
+            do{
+            printf("Enter passenger name: ");
+            scanf(" %49[^\n]", name);
+            for(int i = 0; i < count; i++){
+                if(strcasecmp_custom(tickets[i].name, name) == 0){
+                    displayTicket(tickets, i);
+                    found = 1;
+                }
             }
+            if(!found) 
+                printf("No ticket found for \"%s\".\n", name);
+            }while(!found);
+            if (found){
+                done=1;
+            }
+            
+        } 
+        else {
+            printf("Invalid choice.\n");
         }
-        if(!found) printf("No ticket found for \"%s\".\n", name);
-    } else {
-        printf("Invalid choice.\n");
-    }
+    }while(!done);
 }
 /*==============================================================================================================
 
