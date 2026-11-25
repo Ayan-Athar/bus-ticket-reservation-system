@@ -682,9 +682,10 @@ void saveTickets(void){
         printf("Error opening file for writing.\n");
         return;
     }
+    // Write the column header row at the top of the CSV file
      fprintf(fp, "Ticket ID, Name, Contact Number, Age, Gender, Travel Date, Time Slot, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status\n");
     for(int i = 0; i < count; i++){
-        fprintf(fp, "%d,%s,%s,%d,%s,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%d,%d,%d,%s\n", 
+        fprintf(fp, "%d,%s,%s,%d,%s,%s,%s,%d,%s,%s,%d,%s,%d,%.2f,%d,%.2f,%d,%d,%d,%s\n",   // Write each ticket's 20 fields separated by commas
                                                                     tickets[i].ticket_id, 
                                                                     tickets[i].name,
                                                                     tickets[i].contact, 
@@ -709,7 +710,7 @@ void saveTickets(void){
     fclose(fp);
 }
 
-// Reads previously saved ticket records from tickets.csv,
+// Loads previously saved ticket records from tickets.csv,
 // restores their booking details and updates the ticket count and last generated ticket ID.
 void loadTickets(void){
     FILE *fp = fopen("tickets.csv", "r");
@@ -720,7 +721,7 @@ void loadTickets(void){
     char line[512];
     char status[20];
     char timeSlotStr[20];
-    fgets(line, sizeof(line), fp); // Read header line
+    fgets(line, sizeof(line), fp); // Read and skip the first header line so fscanf starts from actual ticket data
     while(fscanf(fp, "%d,%49[^,],%14[^,],%d,%9[^,],%19[^,],%19[^,],%d,%49[^,],%49[^,],%d,%99[^,],%d,%f,%d,%f,%d,%d,%d,%19[^\r\n]",
                                                                                           &tickets[count].ticket_id, 
                                                                                           tickets[count].name, 
@@ -742,6 +743,7 @@ void loadTickets(void){
                                                                                           &tickets[count].fromKm, 
                                                                                           &tickets[count].toKm, 
                                                                                           status) == 20){
+      // Convert time slot text back into integer code (1, 2, or 3)
         if(strcmp(timeSlotStr, "09:00 AM") == 0)
             tickets[count].timeSlot = 1;
         else if(strcmp(timeSlotStr, "02:00 PM") == 0)
@@ -750,11 +752,11 @@ void loadTickets(void){
             tickets[count].timeSlot = 3;
         else
             tickets[count].timeSlot = 1;
-        
+        // Convert status text back into integer constant (BOOKED or CANCELLED)
         tickets[count].bookingStatus= (strcmp(status, "Booked")== 0) ? BOOKED : CANCELLED;
         count++;
         if(tickets[count-1].ticket_id > lastTicketID)
-        lastTicketID = tickets[count-1].ticket_id; // Update lastTicketID to the last loaded ticket ID
+        lastTicketID = tickets[count-1].ticket_id;     // Update lastTicketID to the last loaded ticket ID
         if(count >= MAX_TICKETS) 
         break;
     }
@@ -785,14 +787,13 @@ int findTicketByID(int ticket_id) {
                                       USER GUIDE / INFO FUNCTION
 
 ================================================================================================================*/
-// Displays instructions about ticket booking,
-// passenger requirements, available routes, fares,
+// Displays instructions about ticket booking, passenger requirements, available routes, fares,
 // time slots, discount policies and other system features.
 void userGuide(void){
     printf("\n================================================================================\n");
     printf("                     BUS TICKET RESERVATION - USER GUIDE\n");
     printf("================================================================================\n");
-
+// Section 1: Input format and validation rules
     printf("\n[1] REQUIRED DETAILS FOR BOOKING:\n");
     printf("  * Passenger Name : Minimum 3 letters; only alphabets, spaces, (.), (-), (') allowed.\n");
     printf("  * Contact Number : 11-digit mobile number starting with '03' (e.g., 03001234567).\n");
@@ -806,7 +807,7 @@ void userGuide(void){
     printf("                     - 2. 02:00 PM\n");
     printf("                     - 3. 08:00 PM\n");
     printf("  * Seat Number    : Choose from 1 to %d (already booked seats cannot be selected).\n", MAX_SEATS);
-
+// Section 2: Route table with dynamic fare calculations
     printf("\n[2] AVAILABLE CITIES, FARES & TIMINGS (Two-Way):\n");
     printf("  Cities on the route (in order):\n");
     printf("  Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore -> Islamabad\n");
@@ -825,12 +826,12 @@ void userGuide(void){
     printf("  ------------------------------------------------------------------------------\n");
     printf("  * Other city pairs (e.g. Sukkur-Multan) are charged the same way by distance.\n");
     printf("  * Discounts (see below) are applied on top of the base fare.\n");
-
+// Section 3: Age-based discount rules
     printf("\n[3] DISCOUNT POLICY:\n");
     printf("  * Children (Age 12 or below)     : 50%% Discount\n");
     printf("  * Senior Citizens (Age 60+)      : 30%% Discount\n");
     printf("  * Regular Passengers (Age 13-59) : No Discount (Full Fare)\n");
-
+// Section 4: General system features
     printf("\n[4] OTHER SYSTEM FEATURES & RULES:\n");
     printf("  * Ticket ID    : Automatically generated (starts from 1001) upon booking.\n");
     printf("  * Cancel Ticket: Cancel anytime using your Ticket ID; your seat becomes free again.\n");
