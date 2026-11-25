@@ -222,7 +222,7 @@ static int showAvailableSeats(const char *date,int timeSlot, int direction, int 
         if(s % 5 == 0) 
         printf("\n");          // New row after every 5 seats
     }
-    printf("\n+----------------------------+\n");
+    printf("+----------------------------+\n");
     printf("\nAvailable seats: %d of %d\n", freeCount, MAX_SEATS);
     return freeCount;
 }
@@ -308,17 +308,17 @@ int main(){
 ================================================================================================================*/
 // Displays the main menu and all available operations of Our Bus Ticket Reservation System.
 void menu(void){
-        printf("\n\n+----------------------------------+\n");
-        printf("\n\nBus Ticket Reservation System\n");
-        printf("+----------------------------------+\n");
-        printf("1. Book Ticket\n");
-        printf("2. Cancel Ticket\n");
-        printf("3. Search Ticket\n");
-        printf("4. Display All Tickets\n");
-        printf("5. User Guide\n");
-        printf("6. Exit\n");
-        printf("+----------------------------------+\n");
-        printf("Enter your choice(1-6): ");
+    printf("\n\n+----------------------------------+\n");
+    printf("|   Bus Ticket Reservation System  |\n");
+    printf("+----------------------------------+\n");
+    printf("| 1. Book Ticket                   |\n");
+    printf("| 2. Cancel Ticket                 |\n");
+    printf("| 3. Search Ticket                 |\n");
+    printf("| 4. Display All Tickets           |\n");
+    printf("| 5. User Guide                    |\n");
+    printf("| 6. Exit                          |\n");
+    printf("+----------------------------------+\n");
+    printf("Enter your choice(1-6): ");
 }
 /*==============================================================================================================
 
