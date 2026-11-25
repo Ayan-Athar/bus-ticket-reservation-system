@@ -451,13 +451,16 @@ void displayTicket(BusTicket tickets[], int index){
                                           ROUTE DETAILS FUNCTIONS
 
 ================================================================================================================*/
-// Takes source and destination cities from the user,
-// determines the travel direction, builds the route display and calculates total distance, duration and ticket price.
+// Takes source and destination cities from the user, determines the travel direction, 
+// builds the route display and calculates total distance, duration and ticket price.
+
+
 void setRouteDetails(BusTicket tickets[], int index){
-    BusTicket *t = &tickets[index];
+    BusTicket *t = &tickets[index];      // Pointer shortcut for the current ticket
     char srcIn[50], dstIn[50];
     int from, to;
 
+  // Display all available cities from the stops array
     printf("\nAvailable cities: ");
     for(int i = 0; i < NUM_STOPS; i++){
     printf("%s", stops[i].name);
@@ -466,17 +469,19 @@ void setRouteDetails(BusTicket tickets[], int index){
     else
         printf("\n");
     }
-
+  
+  // Get and validate starting city (source)
     do{
         printf("Enter source: ");
         if(scanf(" %49[^\n]", srcIn) != 1) 
             srcIn[0] = '\0';
         clearInput();
-        from = findStop(srcIn);
+        from = findStop(srcIn);    // Find index of entered city
         if(from == -1) 
         printf("City not found. Choose from the list.\n");
     } while(from == -1);
 
+    // Get and validate ending city (destination)
     do{
         printf("Enter destination: ");
         if(scanf(" %49[^\n]", dstIn) != 1) 
@@ -487,27 +492,31 @@ void setRouteDetails(BusTicket tickets[], int index){
             printf("City not found. Choose from the list.\n");
         else if(to == from){
             printf("Source and destination must be different.\n");
-            to = -1;
+            to = -1;    // Reset to -1 so the loop repeats
         }
     } while(to == -1);
+  
     // Store the selected source and destination city names in the ticket record.
     strcpy(t->source, stops[from].name);
     strcpy(t->destination, stops[to].name);
 
+    // Determine travel direction and kilometer range (keep fromKm < toKm always)
+    
     int step;
   // Determine the direction of travel.
      if(from < to){
-        step = 1;
+        step = 1;                       // Forward route (Karachi -> Islamabad)
         t->direction = 1;
         t->fromKm = stops[from].km;
         t->toKm   = stops[to].km;
      }
      else {
-        step = -1;
+        step = -1;                     // Return route (Islamabad -> Karachi)
         t->direction = -1;
         t->fromKm = stops[to].km;
         t->toKm   = stops[from].km;
      }
+  
     // Build the complete route string by joining all intermediate cities between source and destination.
      t->routeDisplay[0] = '\0';
      for(int i = from; ; i += step){
@@ -515,13 +524,14 @@ void setRouteDetails(BusTicket tickets[], int index){
             strcat(t->routeDisplay, " -> ");
         strcat(t->routeDisplay, stops[i].name);
         if(i == to) 
-            break;
+            break;              // Stop loop once destination city is added
     }
     // Calculate route distance, estimated travel duration  and base fare using the predefined speed and price per kilometer.
     t->routeDistance = t->toKm - t->fromKm;   /* always positive now, no abs() needed */
-    t->duration = (t->routeDistance + AVG_SPEED - 1) / AVG_SPEED;
+    t->duration = (t->routeDistance + AVG_SPEED - 1) / AVG_SPEED;     // rounded-up travel hours,
     t->price = (float)t->routeDistance * PRICE_PER_KM;
 
+    // Show calculated route summary to the user
     printf("\n--- ROUTE DETAILS ---\n");
     printf("Route: %s\n", t->routeDisplay);
     printf("Total Distance: %d km\n", t->routeDistance);
@@ -533,7 +543,7 @@ void setRouteDetails(BusTicket tickets[], int index){
                                           DISCOUNT FUNCTIONS
 
 ================================================================================================================*/
-// Returns the applicable discount percentage according to the passenger's age category.
+// Returns discount percentage based on passenger age (50% for kids, 30% for seniors)
 int calculateDiscount(int age){
     if(age<=12)
         return 50;
@@ -549,7 +559,7 @@ int calculateDiscount(int age){
 ================================================================================================================*/
 // Returns the final ticket price after subtracting the applicable discount from the base fare.
 float calculateTotalPrice(float price, int discount){
-    return price - (price * discount / 100.0f);
+    return price - (price * discount / 100.0f);     // Used 100.0f to keep decimal precision
 }
  
 /*==============================================================================================================
@@ -560,18 +570,19 @@ float calculateTotalPrice(float price, int discount){
 // Handles the complete ticket booking process.
 // Checks ticket capacity, collects passenger information, confirms successful booking and updates the ticket count.
 void bookTicket(void){
-    if(count >= MAX_TICKETS){
+    if(count >= MAX_TICKETS){                        // Check if the tickets array has reached its maximum limit
         printf("\nNo more tickets can be booked.\n");
         return;
     }
     inputTicket(tickets, count);
  
-    /* inputTicket returns early if the route is invalid */
+    /* InputTicket returns early if the route is invalid */
     if(tickets[count].routeDistance == 0){
         printf("Booking failed. Please try again with a valid route.\n");
         return;
     }
- 
+
+    // Show confirmation slip and increase total ticket counter
     printf("\nTicket booked successfully!");
     displayTicket(tickets, count);
     count++;
@@ -649,7 +660,7 @@ void searchTicket(void){
                                      DISPLAY ALL TICKETS FUNCTION
 
 ================================================================================================================*/
-// Displays all matching tickets.
+// Loops through all stored records and prints every ticket
 void displayAllTickets(void){
     if(count == 0){
         printf("\nNo tickets booked yet.\n");
