@@ -1,5 +1,5 @@
 Ticket ID, Name, Contact Number, Age, Gender, Travel Date, Time Slot, Seat Number, Source, Destination, Duration, Route Display, Route Distance, Price, Discount, Total Price, Direction, From Km, To Km, Booking Status
-1001,Ayan,03121234567,12,MAle,12/12/2026,02:00 PM,20,Karachi,Lahore,17,Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore,1218,24360.00,50,12180.00,1,0,1218,Booked
+1001,Ayan,03121234567,12,MAle,12/12/2026,02:00 PM,20,Karachi,Lahore,17,Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore,1218,24360.00,50,12180.00,1,0,1218,Cancelled
 1002,Sara,03214538954,68,Female,12/12/2026,02:00 PM,1,Karachi,Lahore,17,Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore,1218,24360.00,30,17052.00,1,0,1218,Booked
 1003,Ali,03456124567,43,Male,12/12/2026,09:00 AM,24,Lahore,Karachi,17,Lahore -> Multan -> Sukkur -> Hyderabad -> Karachi,1218,24360.00,0,24360.00,-1,0,1218,Booked
 1004,Ahmed,03212114534,20,Male,12/12/2026,02:00 PM,26,Lahore,Islamabad,5,Lahore -> Islamabad,375,7500.00,0,7500.00,1,1218,1593,Booked
@@ -7,3 +7,4 @@ Ticket ID, Name, Contact Number, Age, Gender, Travel Date, Time Slot, Seat Numbe
 1006,Atif,03211234567,25,Male,12/12/2026,09:00 AM,2,Karachi,Multan,12,Karachi -> Hyderabad -> Sukkur -> Multan,880,17600.00,0,17600.00,1,0,880,Cancelled
 1007,Mubeen,03453257895,65,MAle,01/12/2026,02:00 PM,29,Islamabad,Multan,10,Islamabad -> Lahore -> Multan,713,14260.00,30,9982.00,-1,880,1593,Booked
 1008,hannan,03456782134,65,Male,05/12/2026,08:00 PM,6,Karachi,Hyderabad,3,Karachi -> Hyderabad,165,3300.00,30,2310.00,1,0,165,Booked
+1009,Muhammad Ali,03321789043,10,Male,12/12/2026,08:00 PM,12,Islamabad,Lahore,5,Islamabad -> Lahore,375,7500.00,50,3750.00,-1,1218,1593,Booked

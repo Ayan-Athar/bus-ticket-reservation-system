@@ -276,9 +276,11 @@ int main(){
         switch(opt){
             case 1:
                 bookTicket();
+                saveTickets();   // Saving booking info into the file.
                 break;
             case 2:
                 cancelTicket();
+                saveTickets();   //saving cancellation into the file.
                 break;
             case 3:
                 searchTicket();
@@ -297,8 +299,6 @@ int main(){
         }
     }while(opt != 6);
   
-  // Save all ticket records before terminating the program.
-    saveTickets();
     return 0;
 }
 /*==============================================================================================================
@@ -609,7 +609,7 @@ void cancelTicket(void){
             clearInput();
             printf("Please enter a valid Ticket ID.\n");
             continue;
-            }
+        }
         if(id == 0){
             return;
         }
@@ -687,7 +687,7 @@ void searchTicket(void){
             
         } 
         else {
-            printf("Invalid choice.\n");
+            printf("Please select from the given options.\n");
         }
     }while(!done);
 }
