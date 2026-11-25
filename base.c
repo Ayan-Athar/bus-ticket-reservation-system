@@ -87,7 +87,7 @@ static int isValidAge(int age);
 static int isValidGender(const char *s);
 static int isValidDate(char *s);
 static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm);
-static int isSeatTakenExcept(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm, int excludeIndex);
+static int isSeatTakenExcept(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm, int excludeIndex); //Excludes the selected seat
 static int showAvailableSeats(const char *date, int timeSlot, int direction, int fromKm, int toKm);
 static int findStop(const char *name);
 static int strcasecmp_custom(const char *s1, const char *s2);     // Compares two strings ignoring uppercase/lowercase differences
