@@ -264,6 +264,15 @@ static void clearInput(void){
 int main(){
   // Load previously saved ticket records from 'tickets.csv' into memory on startup
     loadTickets();
+    printf("\n+============================================================================+\n");
+    printf("|                                                                            |\n");
+    printf("|                 WELCOME TO BUS TICKET RESERVATION SYSTEM                   |\n");
+    printf("|                                                                            |\n");
+    printf("|                     YOUR JOURNEY, OUR PRIORITY                             |\n");
+    printf("|                                                                            |\n");
+    printf("|                  SAFE  |  RELIABLE  |  CONVENIENT                          |\n");
+    printf("|                                                                            |\n");
+    printf("+============================================================================+\n");
     int opt;
     do{
         menu();    // Display main menu options
@@ -292,7 +301,15 @@ int main(){
                 userGuide();
                 break;
             case 6:
-                printf("Thank you!\n");
+                printf("\n+============================================================================+\n");
+                printf("|                                                                            |\n");
+                printf("|                       THANK YOU FOR CHOOSING US!                           |\n");
+                printf("|                                                                            |\n");
+                printf("|                 All records have been saved successfully.                  |\n");
+                printf("|                                                                            |\n");
+                printf("|              WISHING YOU A SAFE AND COMFORTABLE JOURNEY!                   |\n");
+                printf("|                                                                            |\n");
+                printf("+============================================================================+\n");
                 break;
             default:
                 printf("Invalid option. Please try again.\n");
@@ -308,17 +325,15 @@ int main(){
 ================================================================================================================*/
 // Displays the main menu and all available operations of Our Bus Ticket Reservation System.
 void menu(void){
-    printf("\n\n+----------------------------------+\n");
-    printf("|   Bus Ticket Reservation System  |\n");
-    printf("+----------------------------------+\n");
-    printf("| 1. Book Ticket                   |\n");
-    printf("| 2. Cancel Ticket                 |\n");
-    printf("| 3. Search Ticket                 |\n");
-    printf("| 4. Display All Tickets           |\n");
-    printf("| 5. User Guide                    |\n");
-    printf("| 6. Exit                          |\n");
-    printf("+----------------------------------+\n");
-    printf("Enter your choice(1-6): ");
+    printf("\n+----------------------------------------------------------------------------+\n");
+    printf("|                        BUS TICKET RESERVATION SYSTEM                       |\n");
+    printf("+-------------------------------------+--------------------------------------+\n");
+    printf("| 1. Book Ticket                      | 4. Display All Tickets               |\n");
+    printf("| 2. Cancel Ticket                    | 5. User Guide                        |\n");
+    printf("| 3. Search Ticket                    | 6. Exit                              |\n");
+    printf("+-------------------------------------+--------------------------------------+\n");
+    printf("Enter your choice (1-6): ");
+    
 }
 /*==============================================================================================================
 
@@ -383,8 +398,12 @@ tickets[index].ticket_id = generateTicketID();
     } while(!isValidDate(tickets[index].date));
 
     // Selecting time slot for the trip
-    printf("\nSelect a time slot:\n");
-    printf("1. 09:00 AM\n2. 02:00 PM\n3. 08:00 PM\n");
+    printf("\n+----------------------------------+\n");
+    printf("| Select a time slot:              |\n");
+    printf("| 1. 09:00 AM                      |\n");
+    printf("| 2. 02:00 PM                      |\n");
+    printf("| 3. 08:00 PM                      |\n");
+    printf("+----------------------------------+\n");
     do {
         printf("Enter your Slot choice (1-3): ");
         if(scanf("%d", &tickets[index].timeSlot) != 1) {
@@ -430,23 +449,25 @@ tickets[index].ticket_id = generateTicketID();
 ================================================================================================================*/
 // Displays all details of a particular ticket, including passenger information, route, fare and status.
 void displayTicket(BusTicket tickets[], int index){
-    printf("\n+---------------------------------------------------+\n");
-    printf("Ticket ID: %d\n", tickets[index].ticket_id);
-    printf("Passenger Name: %s\n", tickets[index].name);
-    printf("Contact Number: %s\n", tickets[index].contact);
-    printf("Age: %d\n", tickets[index].age);
-    printf("Gender: %s\n", tickets[index].gender);
-    printf("Travel Date: %s\n", tickets[index].date);
-    printf("Time Slot: %s\n", timeSlotC(tickets[index].timeSlot));
-    printf("Seat Number: %d\n", tickets[index].seatNumber);
-    printf("Source: %s\n", tickets[index].source);
-    printf("Destination: %s\n", tickets[index].destination);
-    printf("Duration: %d hours\n", tickets[index].duration);
-    printf("Price: %.2f\n", tickets[index].price);
-    printf("Discount: %d%%\n", tickets[index].discount);
-    printf("Total Price: %.2f\n", tickets[index].total_price);
-    printf("Route Display: %s\n", tickets[index].routeDisplay);
-    printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
+    printf("\n+----------------------------------------------------+\n");
+    printf("|               BUS TICKET / BOARDING PASS           |\n");
+    printf("+----------------------------------------------------+\n");
+    printf("| Ticket ID: %d\n", tickets[index].ticket_id);
+    printf("| Passenger Name: %s\n", tickets[index].name);
+    printf("| Contact Number: %s\n", tickets[index].contact);
+    printf("| Age: %d\n", tickets[index].age);
+    printf("| Gender: %s\n", tickets[index].gender);
+    printf("| Travel Date: %s\n", tickets[index].date);
+    printf("| Time Slot: %s\n", timeSlotC(tickets[index].timeSlot));
+    printf("| Seat Number: %d\n", tickets[index].seatNumber);
+    printf("| Source: %s\n", tickets[index].source);
+    printf("| Destination: %s\n", tickets[index].destination);
+    printf("| Duration: %d hours\n", tickets[index].duration);
+    printf("| Price: %.2f\n", tickets[index].price);
+    printf("| Discount: %d%%\n", tickets[index].discount);
+    printf("| Total Price: %.2f\n", tickets[index].total_price);
+    printf("| Route Display: %s\n", tickets[index].routeDisplay);
+    printf("| Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
     printf("+---------------------------------------------------+\n");
 }
 
@@ -637,7 +658,12 @@ void cancelTicket(void){
 void searchTicket(void){
     int choice,done=0;
     do{
-        printf("\nSearch by:\n1. Ticket ID\n2. Passenger Name\nEnter Your Choice(0 to exit): ");
+        printf("\n+----------------------------------+\n");
+        printf("| Search by:                       |\n");
+        printf("| 1. Ticket ID                     |\n");
+        printf("| 2. Passenger Name                |\n");
+        printf("+----------------------------------+\n");
+        printf("Enter Your Choice(0 to exit): ");
         if(scanf("%d", &choice) != 1){
             clearInput();
             printf("Invalid input.\n");
@@ -699,10 +725,14 @@ void searchTicket(void){
 // Loops through all stored records and prints every ticket
 void displayAllTickets(void){
     if(count == 0){
-        printf("\nNo tickets booked yet.\n");
+        printf("\n+----------------------------------------------------+\n");
+        printf("| No tickets booked yet.                             |\n");
+        printf("+----------------------------------------------------+\n");
         return;
     }
-    printf("\n===== ALL TICKETS (%d) =====", count);
+    printf("\n+====================================================+\n");
+    printf("| ALL TICKETS (%d)                                   |\n", count);
+    printf("+====================================================+\n");
     for(int i = 0; i < count; i++)
         displayTicket(tickets, i);
 }
@@ -826,55 +856,66 @@ int findTicketByID(int ticket_id) {
 // Displays instructions about ticket booking, passenger requirements, available routes, fares,
 // time slots, discount policies and other system features.
 void userGuide(void){
-    printf("\n================================================================================\n");
-    printf("                     BUS TICKET RESERVATION - USER GUIDE\n");
-    printf("================================================================================\n");
-// Section 1: Input format and validation rules
-    printf("\n[1] REQUIRED DETAILS FOR BOOKING:\n");
-    printf("  * Passenger Name : Minimum 3 letters; only alphabets, spaces, (.), (-), (') allowed.\n");
-    printf("  * Contact Number : 11-digit mobile number starting with '03' (e.g., 03001234567).\n");
-    printf("  * Age            : Must be between 1 and 120 years.\n");
-    printf("  * Gender         : Male (M), Female (F), or Other.\n");
-    printf("  * Travel Date    : Format dd/mm/yyyy (e.g., 25/11/2026).\n");
-    printf("                     - Same-day or past dates are NOT allowed.\n");
-    printf("                     - Advance booking is open up to 60 days (2 months) ahead.\n");
-    printf("  * Time Slots     : 3 Time Slots available for our Service\n");
-    printf("                     - 1. 09:00 AM\n");
-    printf("                     - 2. 02:00 PM\n");
-    printf("                     - 3. 08:00 PM\n");
-    printf("  * Seat Number    : Choose from 1 to %d (already booked seats cannot be selected).\n", MAX_SEATS);
-// Section 2: Route table with dynamic fare calculations
-    printf("\n[2] AVAILABLE CITIES, FARES & TIMINGS (Two-Way):\n");
-    printf("  Cities on the route (in order):\n");
-    printf("  Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore -> Islamabad\n");
-    printf("  * You can travel between ANY two of these cities, in either direction.\n");
-    printf("  * Fare     : Rs. %d per km.\n", PRICE_PER_KM);
-    printf("  * Duration : Distance / %d km/h, rounded up to the next hour.\n", AVG_SPEED);
-    printf("  ------------------------------------------------------------------------------\n");
-    printf("  Route                      | Distance | Duration | Base Fare\n");
-    printf("  ------------------------------------------------------------------------------\n");
-    printf("  Karachi   <-> Hyderabad    |  165 km  |  3 hrs   | Rs. %d\n", 165  * PRICE_PER_KM);
-    printf("  Karachi   <-> Sukkur       |  470 km  |  7 hrs   | Rs. %d\n", 470  * PRICE_PER_KM);
-    printf("  Karachi   <-> Multan       |  880 km  | 12 hrs   | Rs. %d\n", 880  * PRICE_PER_KM);
-    printf("  Karachi   <-> Lahore       | 1218 km  | 17 hrs   | Rs. %d\n", 1218 * PRICE_PER_KM);
-    printf("  Karachi   <-> Islamabad    | 1593 km  | 22 hrs   | Rs. %d\n", 1593 * PRICE_PER_KM);
-    printf("  Lahore    <-> Islamabad    |  375 km  |  5 hrs   | Rs. %d\n", 375  * PRICE_PER_KM);
-    printf("  ------------------------------------------------------------------------------\n");
-    printf("  * Other city pairs (e.g. Sukkur-Multan) are charged the same way by distance.\n");
-    printf("  * Discounts (see below) are applied on top of the base fare.\n");
-// Section 3: Age-based discount rules
-    printf("\n[3] DISCOUNT POLICY:\n");
-    printf("  * Children (Age 12 or below)     : 50%% Discount\n");
-    printf("  * Senior Citizens (Age 60+)      : 30%% Discount\n");
-    printf("  * Regular Passengers (Age 13-59) : No Discount (Full Fare)\n");
-// Section 4: General system features
-    printf("\n[4] OTHER SYSTEM FEATURES & RULES:\n");
-    printf("  * Ticket ID    : Automatically generated (starts from 1001) upon booking.\n");
-    printf("  * Cancel Ticket: Cancel anytime using your Ticket ID; your seat becomes free again.\n");
-    printf("  * Search Ticket: Search existing bookings by Ticket ID or Passenger Name.\n");
-    printf("  * Capacity     : Maximum %d total tickets can be stored in the system.\n", MAX_TICKETS);
-    printf("  * Auto-Save    : Always exit via the Exit option to save records in 'tickets.csv'.\n");
-    printf("================================================================================\n");
+    printf("\n+============================================================================+\n");
+    printf("|                    BUS TICKET RESERVATION - USER GUIDE                     |\n");
+    printf("+============================================================================+\n");
+
+    printf("\n+----------------------------------------------------------------------------+\n");
+    printf("| [1] REQUIRED DETAILS FOR BOOKING:                                          |\n");
+    printf("+----------------------------------------------------------------------------+\n");
+    printf("| * Passenger Name : Min 3 letters; alphabets, spaces, (.), (-), (') only.   |\n");
+    printf("| * Contact Number : 11-digit mobile starting with '03' (e.g. 03001234567).  |\n");
+    printf("| * Age            : Must be between 1 and 120 years.                        |\n");
+    printf("| * Gender         : Male (M), Female (F), or Other.                         |\n");
+    printf("| * Travel Date    : Format dd/mm/yyyy (e.g., 25/11/2026).                   |\n");
+    printf("|                    - Same-day or past dates are NOT allowed.               |\n");
+    printf("|                    - Advance booking open up to 60 days (2 months) ahead.  |\n");
+    printf("| * Time Slots     : 3 Time Slots available for our Service                  |\n");
+    printf("|                    - 1. 09:00 AM                                           |\n");
+    printf("|                    - 2. 02:00 PM                                           |\n");
+    printf("|                    - 3. 08:00 PM                                           |\n");
+    printf("| * Seat Number    : Choose from 1 to %-2d (booked seats cannot be picked).    |\n", MAX_SEATS);
+    printf("+----------------------------------------------------------------------------+\n");
+
+    printf("\n+----------------------------------------------------------------------------+\n");
+    printf("| [2] AVAILABLE CITIES, FARES & TIMINGS (Two-Way):                           |\n");
+    printf("+----------------------------------------------------------------------------+\n");
+    printf("| Cities on the route (in order):                                            |\n");
+    printf("| Karachi -> Hyderabad -> Sukkur -> Multan -> Lahore -> Islamabad            |\n");
+    printf("| * You can travel between ANY two of these cities, in either direction.     |\n");
+    printf("| * Fare     : Rs. %-2d per km.                                                |\n", PRICE_PER_KM);
+    printf("| * Duration : Distance / %-2d km/h, rounded up to the next hour.              |\n", AVG_SPEED);
+    printf("+----------------------------+----------+----------+-------------------------+\n");
+    printf("| Route                      | Distance | Duration | Base Fare               |\n");
+    printf("+----------------------------+----------+----------+-------------------------+\n");
+    printf("| Karachi   <-> Hyderabad    |  165 km  |  3 hrs   | Rs. %-19d |\n", 165  * PRICE_PER_KM);
+    printf("| Karachi   <-> Sukkur       |  470 km  |  7 hrs   | Rs. %-19d |\n", 470  * PRICE_PER_KM);
+    printf("| Karachi   <-> Multan       |  880 km  | 12 hrs   | Rs. %-19d |\n", 880  * PRICE_PER_KM);
+    printf("| Karachi   <-> Lahore       | 1218 km  | 17 hrs   | Rs. %-19d |\n", 1218 * PRICE_PER_KM);
+    printf("| Karachi   <-> Islamabad    | 1593 km  | 22 hrs   | Rs. %-19d |\n", 1593 * PRICE_PER_KM);
+    printf("| Lahore    <-> Islamabad    |  375 km  |  5 hrs   | Rs. %-19d |\n", 375  * PRICE_PER_KM);
+    printf("+----------------------------+----------+----------+-------------------------+\n");
+    printf("| * Other city pairs (e.g. Sukkur-Multan) are charged the same by distance.  |\n");
+    printf("| * Discounts (see below) are applied on top of the base fare.               |\n");
+    printf("+----------------------------------------------------------------------------+\n");
+
+    printf("\n+----------------------------------------------------------------------------+\n");
+    printf("| [3] DISCOUNT POLICY:                                                       |\n");
+    printf("+----------------------------------------------------------------------------+\n");
+    printf("| * Children (Age 12 or below)     : 50%% Discount                            |\n");
+    printf("| * Senior Citizens (Age 60+)      : 30%% Discount                            |\n");
+    printf("| * Regular Passengers (Age 13-59) : No Discount (Full Fare)                 |\n");
+    printf("+----------------------------------------------------------------------------+\n");
+
+    printf("\n+----------------------------------------------------------------------------+\n");
+    printf("| [4] OTHER SYSTEM FEATURES & RULES:                                         |\n");
+    printf("+----------------------------------------------------------------------------+\n");
+    printf("| * Ticket ID    : Automatically generated (starts from 1001) upon booking.  |\n");
+    printf("| * Cancel Ticket: Cancel anytime using Ticket ID; seat becomes free again.  |\n");
+    printf("| * Search Ticket: Search existing bookings by Ticket ID or Passenger Name.  |\n");
+    printf("| * Capacity     : Maximum %-3d total tickets can be stored in the system.    |\n", MAX_TICKETS);
+    printf("| * Auto-Save    : Always exit via Exit option to save in 'tickets.csv'.     |\n");
+    printf("+============================================================================+\n");
 
     clearInput();
     printf("Press Enter to return to the Main Menu...");
