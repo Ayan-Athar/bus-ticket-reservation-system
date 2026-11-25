@@ -913,7 +913,7 @@ void userGuide(void){
     printf("| * Ticket ID    : Automatically generated (starts from 1001) upon booking.  |\n");
     printf("| * Cancel Ticket: Cancel anytime using Ticket ID; seat becomes free again.  |\n");
     printf("| * Search Ticket: Search existing bookings by Ticket ID or Passenger Name.  |\n");
-    printf("| * Capacity     : Maximum %-3d total tickets can be stored in the system.   |\n", MAX_TICKETS);
+    printf("| * Capacity     : Maximum %-3d total tickets can be stored in the system.    |\n", MAX_TICKETS);
     printf("| * Auto-Save    : Tickets Auto-save in 'tickets.csv'.                       |\n");
     printf("+============================================================================+\n");
 
