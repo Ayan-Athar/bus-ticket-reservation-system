@@ -211,6 +211,7 @@ static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, 
 static int showAvailableSeats(const char *date,int timeSlot, int direction, int fromKm, int toKm){
     int freeCount = 0;
     printf("\n--- SEATS for %s (Slot: %s) ---\nNote: [XX] = booked seat for part of your trip\n\n", date, timeSlotC(timeSlot));
+    printf("\n+----------------------------+\n");
     for(int s = 1; s <= MAX_SEATS; s++){
         if(isSeatTaken(s, timeSlot, date, direction, fromKm, toKm))
             printf("[XX] ");
@@ -221,6 +222,7 @@ static int showAvailableSeats(const char *date,int timeSlot, int direction, int 
         if(s % 5 == 0) 
         printf("\n");          // New row after every 5 seats
     }
+    printf("+----------------------------+\n");
     printf("\nAvailable seats: %d of %d\n", freeCount, MAX_SEATS);
     return freeCount;
 }
@@ -306,14 +308,17 @@ int main(){
 ================================================================================================================*/
 // Displays the main menu and all available operations of Our Bus Ticket Reservation System.
 void menu(void){
-        printf("\n\nBus Ticket Reservation System\n");
-        printf("1. Book Ticket\n");
-        printf("2. Cancel Ticket\n");
-        printf("3. Search Ticket\n");
-        printf("4. Display All Tickets\n");
-        printf("5. User Guide\n");
-        printf("6. Exit\n");
-        printf("Enter your choice(1-6): ");
+    printf("\n\n+----------------------------------+\n");
+    printf("|   Bus Ticket Reservation System  |\n");
+    printf("+----------------------------------+\n");
+    printf("| 1. Book Ticket                   |\n");
+    printf("| 2. Cancel Ticket                 |\n");
+    printf("| 3. Search Ticket                 |\n");
+    printf("| 4. Display All Tickets           |\n");
+    printf("| 5. User Guide                    |\n");
+    printf("| 6. Exit                          |\n");
+    printf("+----------------------------------+\n");
+    printf("Enter your choice(1-6): ");
 }
 /*==============================================================================================================
 
@@ -425,7 +430,7 @@ tickets[index].ticket_id = generateTicketID();
 ================================================================================================================*/
 // Displays all details of a particular ticket, including passenger information, route, fare and status.
 void displayTicket(BusTicket tickets[], int index){
-    printf("\n-------------------------------------\n");
+    printf("\n+---------------------------------------------------+\n");
     printf("Ticket ID: %d\n", tickets[index].ticket_id);
     printf("Passenger Name: %s\n", tickets[index].name);
     printf("Contact Number: %s\n", tickets[index].contact);
@@ -442,7 +447,7 @@ void displayTicket(BusTicket tickets[], int index){
     printf("Total Price: %.2f\n", tickets[index].total_price);
     printf("Route Display: %s\n", tickets[index].routeDisplay);
     printf("Status: %s\n", tickets[index].bookingStatus == BOOKED ? "Booked" : "Cancelled");
-    printf("-------------------------------------\n");
+    printf("+---------------------------------------------------+\n");
 }
 
 
@@ -532,10 +537,12 @@ void setRouteDetails(BusTicket tickets[], int index){
     t->price = (float)t->routeDistance * PRICE_PER_KM;
 
     // Show calculated route summary to the user
+    printf("\n+--------------------------------------------------+\n");
     printf("\n--- ROUTE DETAILS ---\n");
     printf("Route: %s\n", t->routeDisplay);
     printf("Total Distance: %d km\n", t->routeDistance);
     printf("Total Duration: %d hours\n", t->duration);
+    printf("\n+--------------------------------------------------+\n");
 }
 
 /*==============================================================================================================
