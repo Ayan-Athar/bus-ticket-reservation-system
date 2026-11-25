@@ -1,7 +1,6 @@
 // ==================== HEADER FILES ====================
 // Required header files for input/output, memory utilities,string handling, character validation and date/time operations.
 #include<stdio.h>
-#include<stdlib.h> 
 #include<string.h>
 #include<ctype.h> 
 #include<time.h>
@@ -70,6 +69,7 @@ void userGuide(void);
 void displayAllTickets(void);
 void bookTicket(void);
 void cancelTicket(void);
+void updateTicket(void);
 int findTicketByID(int ticket_id);
 void searchTicket(void);
 int calculateDiscount(int age);
@@ -87,6 +87,7 @@ static int isValidAge(int age);
 static int isValidGender(const char *s);
 static int isValidDate(char *s);
 static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm);
+static int isSeatTakenExcept(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm, int excludeIndex);
 static int showAvailableSeats(const char *date, int timeSlot, int direction, int fromKm, int toKm);
 static int findStop(const char *name);
 static int strcasecmp_custom(const char *s1, const char *s2);     // Compares two strings ignoring uppercase/lowercase differences
@@ -195,14 +196,21 @@ static const char *timeSlotC(int timeSlot) {
 // Checks whether a particular seat is already booked for the selected date, time slot and overlapping route.
 static int isSeatTaken(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm){
     for(int i = 0; i < count; i++){
-        if(tickets[i].bookingStatus == BOOKED && 
-           tickets[i].seatNumber == seat && 
-           tickets[i].timeSlot == timeSlot && 
-           strcmp(tickets[i].date, date) == 0 &&
-           tickets[i].direction == direction && 
-           fromKm < tickets[i].toKm && tickets[i].fromKm < toKm)     // Overlap condition
+        if(tickets[i].bookingStatus == BOOKED && tickets[i].seatNumber == seat && tickets[i].timeSlot == timeSlot && strcmp(tickets[i].date, date) == 0 &&tickets[i].direction == direction && fromKm < tickets[i].toKm && tickets[i].fromKm < toKm)     // Overlap condition
             return 1;
     }
+    return 0;
+}
+
+static int isSeatTakenExcept(int seat, int timeSlot, const char *date, int direction, int fromKm, int toKm, int excludeIndex) {
+    for(int i = 0; i < count; i++) {
+        if(i == excludeIndex)
+            continue;
+        if(tickets[i].bookingStatus == BOOKED && tickets[i].seatNumber == seat && tickets[i].timeSlot == timeSlot && strcmp(tickets[i].date, date) == 0 && tickets[i].direction == direction && fromKm < tickets[i].toKm && tickets[i].fromKm < toKm) {
+            return 1;
+        }
+    }
+
     return 0;
 }
 
@@ -292,15 +300,19 @@ int main(){
                 saveTickets();   //saving cancellation into the file.
                 break;
             case 3:
-                searchTicket();
+                updateTicket();
+                saveTickets();   //saving updated ticket into the file.
                 break;
             case 4:
-                displayAllTickets();
+                searchTicket();
                 break;
             case 5:
-                userGuide();
+                displayAllTickets();
                 break;
             case 6:
+                userGuide();
+                break;
+            case 7:
                 printf("\n+============================================================================+\n");
                 printf("|                                                                            |\n");
                 printf("|                       THANK YOU FOR CHOOSING US!                           |\n");
@@ -314,7 +326,7 @@ int main(){
             default:
                 printf("Invalid option. Please try again.\n");
         }
-    }while(opt != 6);
+    }while(opt != 7);
   
     return 0;
 }
@@ -328,11 +340,12 @@ void menu(void){
     printf("\n+----------------------------------------------------------------------------+\n");
     printf("|                        BUS TICKET RESERVATION SYSTEM                       |\n");
     printf("+-------------------------------------+--------------------------------------+\n");
-    printf("| 1. Book Ticket                      | 4. Display All Tickets               |\n");
-    printf("| 2. Cancel Ticket                    | 5. User Guide                        |\n");
-    printf("| 3. Search Ticket                    | 6. Exit                              |\n");
+    printf("| 1. Book Ticket                      | 5. Display All Tickets               |\n");
+    printf("| 2. Cancel Ticket                    | 6. User Guide                        |\n");
+    printf("| 3. Update Ticket                    | 7. Exit                              |\n");
+    printf("| 4. Search Ticket                    |                                      |\n");
     printf("+-------------------------------------+--------------------------------------+\n");
-    printf("Enter your choice (1-6): ");
+    printf("Enter your choice (1-7): ");
     
 }
 /*==============================================================================================================
@@ -649,6 +662,187 @@ void cancelTicket(void){
         }
     }while (!done);
 }
+
+/*==============================================================================================================
+
+                                          UPDATE TICKET FUNCTION
+
+================================================================================================================*/
+//To update an existing ticket in case of wrong or incorrect info mistakenly given by the user.
+void updateTicket(void){
+    int id, idx, choice,done=0;
+    int newSeat;
+    BusTicket oldTicket;
+    printf("\n===== UPDATE TICKET =====\n");
+    do {
+        printf("\nEnter Ticket ID to update (0 to exit): ");
+        if(scanf("%d", &id) != 1){
+            clearInput();
+            printf("Invalid input! Please enter a numeric Ticket ID.\n");
+            continue;
+        }
+        if(id == 0){
+            printf("Update operation cancelled.\n");
+            return;
+        }
+
+        idx = findTicketByID(id);
+
+        if(idx == -1){
+            printf("Ticket not found! Please enter a valid ID.\n");
+        }
+        else if(tickets[idx].bookingStatus == CANCELLED){
+            printf("This ticket is already cancelled. Cannot update it.\n");
+            return;
+        }
+        else{
+            done = 1;
+        }
+
+    } while(!done);
+
+    // Create backup before making changes
+    oldTicket = tickets[idx];
+
+    printf("\nExisting Ticket Details:\n");
+    displayTicket(tickets, idx);
+    do {
+        printf("\n===== SELECT INFORMATION TO UPDATE =====\n");
+        printf("1. Passenger Name\n");
+        printf("2. Contact Number\n");
+        printf("3. Age\n");
+        printf("4. Gender\n");
+        printf("5. Travel Date\n");
+        printf("6. Time Slot\n");
+        printf("7. Source and Destination\n");
+        printf("8. Seat Number\n");
+        printf("9. Finish Updating\n");
+        printf("-------------------------------------------------------\n");
+        printf("Enter your choice: ");
+
+        if(scanf("%d", &choice) != 1) {
+            clearInput();
+            printf("Invalid input.\n");
+            continue;
+        }
+        switch(choice){
+            case 1:
+                do{
+                    printf("Enter new passenger name: ");
+                    scanf(" %49[^\n]", tickets[idx].name);
+                    clearInput();
+
+                    if(!isValidName(tickets[idx].name))
+                        printf("Name must not contain numeric values.\n");
+
+                }while(!isValidName(tickets[idx].name));
+                break;
+
+            case 2:
+                do{
+                    printf("Enter new contact number: ");
+                    scanf(" %14[^\n]", tickets[idx].contact);
+                    clearInput();
+
+                    if(!isValidContact(tickets[idx].contact))
+                        printf("Please enter a valid contact number.\n");
+
+                }while(!isValidContact(tickets[idx].contact));
+                break;
+
+            case 3:
+                do{
+                    printf("Enter new age: ");
+                    if(scanf("%d", &tickets[idx].age) != 1) {
+                        tickets[idx].age = -1;
+                        clearInput();
+                    }
+                    if(!isValidAge(tickets[idx].age))
+                        printf("Age must be between 1 and 120.\n");
+
+                } while(!isValidAge(tickets[idx].age));
+
+                // Recalculate discount and fare
+                tickets[idx].discount = calculateDiscount(tickets[idx].age);
+                tickets[idx].total_price = calculateTotalPrice(tickets[idx].price, tickets[idx].discount);
+                break;
+
+            case 4:
+                do{
+                    printf("Enter new gender (Male/Female/Other): ");
+                    scanf(" %9[^\n]", tickets[idx].gender);
+                    clearInput();
+
+                    if(!isValidGender(tickets[idx].gender))
+                        printf("Invalid gender.\n");
+
+                }while(!isValidGender(tickets[idx].gender));
+                break;
+
+            case 5:
+                do{
+                    printf("Enter new travel date (dd/mm/yyyy): ");
+                    scanf(" %19[^\n]", tickets[idx].date);
+                    clearInput();
+
+                } while(!isValidDate(tickets[idx].date));
+                break;
+
+            case 6:
+                printf("\n1. 09:00 AM\n");
+                printf("2. 02:00 PM\n");
+                printf("3. 08:00 PM\n");
+                do {
+                    printf("Enter new time slot (1-3): ");
+                    if(scanf("%d", &tickets[idx].timeSlot) != 1) {
+                        tickets[idx].timeSlot = 0;
+                        clearInput();
+                    }
+                    if(tickets[idx].timeSlot < 1 || tickets[idx].timeSlot > 3)
+                        printf("Please Select from the given slots.\n");
+
+                } while(tickets[idx].timeSlot < 1 || tickets[idx].timeSlot > 3);
+                break;
+
+            case 7:
+                setRouteDetails(tickets, idx);
+                break;
+
+            case 8:
+                do{
+                    printf("Enter new seat number (1-%d): ", MAX_SEATS);
+                    if(scanf("%d", &newSeat) != 1) {
+                        newSeat = 0;
+                        clearInput();
+                    }
+                    if(newSeat < 1 || newSeat > MAX_SEATS) {
+                        printf("Please Enter a seat number in between 1-%d.\n",MAX_SEATS);
+                    }
+                    else if(isSeatTakenExcept(newSeat, tickets[idx].timeSlot, tickets[idx].date, tickets[idx].direction, tickets[idx].fromKm, tickets[idx].toKm, idx)){
+                        printf("Seat %d is already booked!\n", newSeat);
+                        newSeat = 0;
+                    }
+                }while(newSeat < 1 || newSeat > MAX_SEATS);
+
+                tickets[idx].seatNumber = newSeat;
+                break;
+
+            case 9:
+                break;
+
+            default:
+                printf("Invalid option.\n");
+        }
+
+    } while(choice != 9);
+
+    printf("\nTicket updated successfully!\n");
+    printf("-----------------------------------------------\n");
+    // Display updated ticket
+    displayTicket(tickets, idx);
+}
+
+
 /*==============================================================================================================
 
                                           SEARCH FUNCTIONS
@@ -912,6 +1106,7 @@ void userGuide(void){
     printf("+----------------------------------------------------------------------------+\n");
     printf("| * Ticket ID    : Automatically generated (starts from 1001) upon booking.  |\n");
     printf("| * Cancel Ticket: Cancel anytime using Ticket ID; seat becomes free again.  |\n");
+    printf("| * Update Ticket: You can update your ticket anytime using Ticket ID.       |\n");
     printf("| * Search Ticket: Search existing bookings by Ticket ID or Passenger Name.  |\n");
     printf("| * Capacity     : Maximum %-3d total tickets can be stored in the system.    |\n", MAX_TICKETS);
     printf("| * Auto-Save    : Tickets Auto-save in 'tickets.csv'.                       |\n");
