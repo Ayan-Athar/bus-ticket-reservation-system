@@ -143,7 +143,6 @@ static int isValidGender(const char *s){
 static int isValidDate(char *s){
     int d, m, y;
     char extra;
-  
   // Extract day, month, year; 'extra' catches invalid text at the end (e.g., "12/05/2026abc").
     if(sscanf(s, "%d/%d/%d%c", &d, &m, &y, &extra) != 3){
         printf("Use the format dd/mm/yyyy.\n");
